@@ -944,6 +944,134 @@ body::before{
   transition:opacity .2s;
 }
 
+/* ─── SOFT GATE ──────────────────────────────────────────────────────────── */
+.gate-wrapper{
+  position:relative;
+  margin-top:8px;
+}
+.gate-content{
+  transition:filter .5s ease, opacity .5s ease;
+}
+.gate-content.locked{
+  filter:blur(5px);
+  opacity:0.45;
+  pointer-events:none;
+  user-select:none;
+}
+/* Fade out the bottom edge of the locked content */
+.gate-fade{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:120px;
+  background:linear-gradient(to bottom, transparent, var(--navy) 85%);
+  pointer-events:none;
+  transition:opacity .5s;
+  z-index:1;
+}
+.gate-fade.hidden{opacity:0;pointer-events:none}
+
+/* The overlay unlock card */
+.gate-overlay{
+  position:absolute;
+  left:0;right:0;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:10;
+  background:var(--navy-card);
+  border:2px solid var(--orange);
+  border-radius:var(--radius-lg);
+  padding:28px 24px 22px;
+  text-align:center;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(249,115,22,0.15);
+  transition:opacity .4s, transform .4s;
+}
+.gate-overlay::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,#f97316,#fb923c,#f97316);
+  background-size:200% 100%;
+  animation:shimmer 2.5s linear infinite;
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+}
+.gate-overlay.hidden{
+  opacity:0;
+  transform:translateY(-44%);
+  pointer-events:none;
+}
+.gate-eyebrow{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.14em;
+  color:var(--orange);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.gate-headline{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(19px,5vw,24px);
+  line-height:1.1;
+  margin-bottom:8px;
+}
+.gate-body{
+  font-size:13px;
+  color:var(--white-80);
+  line-height:1.55;
+  margin-bottom:20px;
+  max-width:380px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.gate-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  max-width:360px;
+  margin:0 auto;
+}
+.btn-gate-book{
+  width:100%;
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius);
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:16px;
+  letter-spacing:0.03em;
+  padding:14px 18px;
+  cursor:pointer;
+  text-transform:uppercase;
+  transition:background .2s,box-shadow .2s,transform .1s;
+  box-shadow:0 4px 18px rgba(249,115,22,0.35);
+}
+.btn-gate-book:hover{background:var(--orange-dark);box-shadow:0 6px 24px rgba(249,115,22,0.45);transform:translateY(-1px)}
+.btn-gate-book:active{transform:scale(0.98)}
+.btn-gate-email{
+  width:100%;
+  background:transparent;
+  color:var(--white-80);
+  border:1.5px solid var(--navy-border);
+  border-radius:var(--radius);
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:0.02em;
+  padding:12px 18px;
+  cursor:pointer;
+  text-transform:uppercase;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.btn-gate-email:hover{border-color:var(--white-50);color:#fff;background:var(--white-20)}
+.gate-support{
+  font-size:11px;
+  color:var(--white-50);
+  margin-top:12px;
+}
+
 /* ─── SCAN WAITING STATE ─────────────────────────────────────────────────── */
 .scan-waiting-msg{
   font-size:13px;
@@ -1165,21 +1293,43 @@ body::before{
       <div class="booking-trust-line">No obligation. No hard sell. Just a clear walkthrough.</div>
     </div>
 
-    <!-- De-emphasised details -->
-    <div class="details-section">
-      <div class="details-nudge">We'll walk you through these on your free review, or send the full breakdown by email.</div>
+    <!-- Soft-gated details section -->
+    <div class="gate-wrapper">
 
-      <!-- Score breakdown -->
-      <div class="section-title">Score Breakdown</div>
-      <div class="breakdown-bars" id="breakdown-bars"></div>
+      <!-- Blurred/locked content -->
+      <div class="gate-content locked" id="gate-content">
+        <div class="details-section">
+          <div class="details-nudge">We'll walk you through these on your free review, or send the full breakdown by email.</div>
 
-      <!-- Issues -->
-      <div class="section-title" id="issues-title" style="display:none">What May Be Costing You Work</div>
-      <ul class="issues-list" id="issues-list"></ul>
+          <!-- Score breakdown -->
+          <div class="section-title">Score Breakdown</div>
+          <div class="breakdown-bars" id="breakdown-bars"></div>
 
-      <!-- Fixes -->
-      <div class="section-title" id="fixes-title" style="display:none">Fastest Fixes To Recover Lost Jobs</div>
-      <ul class="fixes-list" id="fixes-list"></ul>
+          <!-- Issues -->
+          <div class="section-title" id="issues-title" style="display:none">What May Be Costing You Work</div>
+          <ul class="issues-list" id="issues-list"></ul>
+
+          <!-- Fixes -->
+          <div class="section-title" id="fixes-title" style="display:none">Fastest Fixes To Recover Lost Jobs</div>
+          <ul class="fixes-list" id="fixes-list"></ul>
+        </div>
+      </div>
+
+      <!-- Bottom fade mask -->
+      <div class="gate-fade" id="gate-fade"></div>
+
+      <!-- Unlock overlay -->
+      <div class="gate-overlay" id="gate-overlay">
+        <div class="gate-eyebrow">Unlock The Full Breakdown</div>
+        <div class="gate-headline">See Exactly What's Costing You Jobs</div>
+        <div class="gate-body">Book your free review or request the full breakdown by email to unlock the exact issues and fastest fixes.</div>
+        <div class="gate-buttons">
+          <button class="btn-gate-book" onclick="gateBook()">Book My Free Review →</button>
+          <button class="btn-gate-email" onclick="gateEmail()">Unlock By Email →</button>
+        </div>
+        <div class="gate-support">No obligation. No hard sell. Just the clearest next steps.</div>
+      </div>
+
     </div>
 
     <!-- Lead capture -->
@@ -1268,11 +1418,12 @@ body::before{
 const BACKEND_URL      = '/.netlify/functions/scan';  // ← Netlify function
 const LEAD_BACKEND_URL = '/.netlify/functions/lead';  // ← Netlify function
 const PSI_API_KEY      = 'AIzaSyC1mlD1VaZ_QxeW8gsQ2oEO70irol2tGeI'; // ← paste key here
-const BOOKING_URL      = 'https://calendly.com/rosch-rdklive/10mins'; // ← paste your Calendly URL here
+const BOOKING_URL      = 'https://calendly.com/your-link'; // ← paste your Calendly URL here
 
 /* ─── STATE ──────────────────────────────────────────────────────────────── */
-let scanResult     = null;
-let qualifierValue = null; // stores selected qualifier option
+let scanResult      = null;
+let qualifierValue  = null; // stores selected qualifier option
+let detailsUnlocked = false; // soft gate state
 
 /* ─── SHOW STATE ─────────────────────────────────────────────────────────── */
 function showState(id) {
@@ -1432,8 +1583,9 @@ async function startScan() {
     return;
   }
 
-  // Reset qualifier
-  qualifierValue = null;
+  // Reset qualifier and gate state
+  qualifierValue  = null;
+  detailsUnlocked = false;
   document.querySelectorAll('.qualifier-option').forEach(el => el.classList.remove('selected'));
   const qHint = document.getElementById('qualifier-hint');
   if (qHint) qHint.textContent = '';
@@ -1503,6 +1655,16 @@ async function startScan() {
 
 /* ─── RENDER RESULTS ─────────────────────────────────────────────────────── */
 function renderResults(data) {
+  // Re-lock gate for each fresh render
+  if (!detailsUnlocked) {
+    const content = document.getElementById('gate-content');
+    const overlay = document.getElementById('gate-overlay');
+    const fade    = document.getElementById('gate-fade');
+    if (content) content.classList.add('locked');
+    if (overlay) overlay.classList.remove('hidden');
+    if (fade)    fade.classList.remove('hidden');
+  }
+
   // Support both new shape (totalScore/categoryScores) and old shape (score.total)
   const score  = data.totalScore ?? data.score?.total ?? 0;
   const cats   = data.categoryScores || {};
@@ -1651,9 +1813,41 @@ function renderResults(data) {
   }
 }
 
+/* ─── SOFT GATE ──────────────────────────────────────────────────────────── */
+function unlockDetails() {
+  if (detailsUnlocked) return;
+  detailsUnlocked = true;
+  const content  = document.getElementById('gate-content');
+  const overlay  = document.getElementById('gate-overlay');
+  const fade     = document.getElementById('gate-fade');
+  if (content) content.classList.remove('locked');
+  if (overlay) overlay.classList.add('hidden');
+  if (fade)    fade.classList.add('hidden');
+}
+
+function gateBook() {
+  unlockDetails();
+  // Small delay so user sees unlock before modal/tab opens
+  setTimeout(() => openBooking(null), 300);
+}
+
+function gateEmail() {
+  unlockDetails();
+  // Scroll to lead section and focus name field
+  const leadCard = document.getElementById('lead-card-section');
+  if (leadCard) {
+    leadCard.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      const nameField = document.getElementById('inp-name');
+      if (nameField) nameField.focus();
+    }, 500);
+  }
+}
+
 /* ─── BOOKING + SCROLL HELPERS ───────────────────────────────────────────── */
 function openBooking(e) {
   if (e) e.preventDefault();
+  unlockDetails();
   if (BOOKING_URL && BOOKING_URL !== 'https://calendly.com/your-link') {
     window.open(BOOKING_URL, '_blank', 'noopener');
   } else {
@@ -1714,6 +1908,7 @@ async function submitLead(intent) {
       body: JSON.stringify({ name, email, phone, intent: intent || 'report', qualifier: qualifierValue, scanPayload: scanResult })
     });
     if (!res.ok) throw new Error(`Server error ${res.status}`);
+    unlockDetails();
     showState('state-success');
   } catch (err) {
     console.error('[Lead]', err);
