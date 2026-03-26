@@ -1037,7 +1037,7 @@ const apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
   + '&category=performance';
 
     const ctrl  = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 25000);
+    const timer = setTimeout(() => ctrl.abort(), 55000);
     const res   = await fetch(apiUrl, { signal: ctrl.signal });
     clearTimeout(timer);
 
@@ -1099,19 +1099,19 @@ async function startScan() {
 
   try {
     // Run PageSpeed from browser + backend scan in parallel
-    const [psiResult, backendRes] = await Promise.all([
-      fetchPSIFromBrowser(rawUrl),
-      fetch(BACKEND_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
-      })
-    ]);
+    // Run PSI first (browser), then backend — sequential avoids abort race
+  const psiResult = await fetchPSIFromBrowser(rawUrl);
 
-    if (!backendRes.ok) {
-      const err = await backendRes.json().catch(() => ({}));
-      throw new Error(err.message || `Server error ${backendRes.status}`);
-    }
+  const backendRes = await fetch(BACKEND_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
+  });
+
+  if (!backendRes.ok) {
+    const err = await backendRes.json().catch(() => ({}));
+    throw new Error(err.message || `Server error ${backendRes.status}`);
+  }
 
     scanResult = await backendRes.json();
 
