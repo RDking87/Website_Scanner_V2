@@ -1,0 +1,15 @@
+[build]
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Increase timeout for scan function — PageSpeed API can take 12-18s
+[functions."scan"]
+  timeout = 26
+
+[functions."lead"]
+  timeout = 10
+
+[build.environment]
+  NODE_VERSION = "20"
