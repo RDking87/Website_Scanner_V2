@@ -961,13 +961,18 @@ body::before{
 <script>
 'use strict';
 
-/* ─── CONFIG ──────────────────────────────────────────────────────────────
- * BACKEND_URL: point this at your deployed scan endpoint
- * e.g. https://your-domain.vercel.app/api/scan
- * or   http://localhost:3001/api/scan  (local dev)
+/* ─── CONFIG ─────────────────────────────────────────────────────────────
+ * BACKEND_URL      — your Netlify function endpoint
+ * LEAD_BACKEND_URL — your Netlify lead function endpoint
+ * PSI_API_KEY      — Google PageSpeed Insights API key
+ *                    Called from the browser to avoid serverless timeouts.
+ *                    Safe to expose in frontend — restrict key to your domain
+ *                    in Google Cloud Console (HTTP referrers restriction).
  */
-const BACKEND_URL      = '/.netlify/functions/scan';  // ✅
-const LEAD_BACKEND_URL = '/.netlify/functions/lead';  // ✅
+const BACKEND_URL      = '/.netlify/functions/scan';  // ← Netlify function
+const LEAD_BACKEND_URL = '/.netlify/functions/lead';  // ← Netlify function
+const PSI_API_KEY      = 'AIzaSyC1mlD1VaZ_QxeW8gsQ2oEO70irol2tGeI'; // ← paste key here
+
 /* ─── STATE ──────────────────────────────────────────────────────────────── */
 let scanResult = null;
 
@@ -1016,6 +1021,58 @@ function animateScanSteps(totalMs) {
   setTimeout(() => renderScanSteps(SCAN_STEPS.length), totalMs - 100);
 }
 
+/* ─── BROWSER-SIDE PAGESPEED ─────────────────────────────────────────────── */
+async function fetchPSIFromBrowser(url) {
+  // Called directly from the browser — avoids serverless timeout entirely.
+  // Key is safe to use here if you restrict it to your domain in Google Cloud.
+  if (!PSI_API_KEY || PSI_API_KEY === 'YOUR_PAGESPEED_API_KEY_HERE') {
+    console.warn('[PSI] No key set in index.html — skipping browser PSI');
+    return null;
+  }
+  try {
+    const fields = [
+      'lighthouseResult/categories/performance/score',
+      'lighthouseResult/audits/largest-contentful-paint/displayValue',
+      'lighthouseResult/audits/cumulative-layout-shift/displayValue',
+      'lighthouseResult/audits/first-contentful-paint/displayValue',
+      'lighthouseResult/audits/total-blocking-time/displayValue',
+      'loadingExperience/overall_category'
+    ].join(',');
+
+    const apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
+      + '?url=' + encodeURIComponent(url)
+      + '&strategy=mobile'
+      + '&key=' + PSI_API_KEY
+      + '&category=performance'
+      + '&fields=' + fields;
+
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 25000);
+    const res   = await fetch(apiUrl, { signal: ctrl.signal });
+    clearTimeout(timer);
+
+    if (!res.ok) { console.warn('[PSI] HTTP', res.status); return null; }
+    const data = await res.json();
+    if (data.error) { console.warn('[PSI] API error', data.error.code); return null; }
+
+    const cats  = data.lighthouseResult?.categories || {};
+    const audit = data.lighthouseResult?.audits     || {};
+    const perf  = Math.min(Math.max(Math.round((cats.performance?.score || 0) * 100), 0), 100);
+    console.log('[PSI] Browser score:', perf);
+    return {
+      performanceScore: perf,
+      mobileStrategy:   data.loadingExperience?.overall_category || null,
+      lcp: audit['largest-contentful-paint']?.displayValue   || null,
+      cls: audit['cumulative-layout-shift']?.displayValue    || null,
+      fcp: audit['first-contentful-paint']?.displayValue     || null,
+      tbt: audit['total-blocking-time']?.displayValue        || null,
+    };
+  } catch (e) {
+    console.warn('[PSI] Browser fetch failed:', e.message);
+    return null;
+  }
+}
+
 /* ─── START SCAN ─────────────────────────────────────────────────────────── */
 async function startScan() {
   const rawUrl = document.getElementById('inp-url').value.trim();
@@ -1043,22 +1100,55 @@ async function startScan() {
   renderScanSteps(0);
   showState('state-scanning');
 
-  // Start step animation (~26 seconds max wait)
-  animateScanSteps(26000);
+  // Minimum perceived scan time — feels thorough even if APIs are fast
+  const MIN_SCAN_MS   = 11000;
+  const scanStartTime = Date.now();
+
+  // Animate steps over the minimum duration
+  animateScanSteps(MIN_SCAN_MS);
 
   try {
-    const res = await fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
-    });
+    // Run PageSpeed from browser + backend scan in parallel
+    const [psiResult, backendRes] = await Promise.all([
+      fetchPSIFromBrowser(rawUrl),
+      fetch(BACKEND_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
+      })
+    ]);
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Server error ${res.status}`);
+    if (!backendRes.ok) {
+      const err = await backendRes.json().catch(() => ({}));
+      throw new Error(err.message || `Server error ${backendRes.status}`);
     }
 
-    scanResult = await res.json();
+    scanResult = await backendRes.json();
+
+    // Inject browser PSI results into scan payload if backend PSI failed
+    if (psiResult && scanResult.fallbackFlags?.pageSpeedFailed) {
+      scanResult._browserPsi = psiResult;
+      // Override speed + mobile scores with real browser PSI data
+      const p = psiResult.performanceScore;
+      scanResult.categoryScores.speed.score         = p >= 90 ? 20 : p >= 75 ? 16 : p >= 50 ? 10 : p >= 30 ? 5 : 2;
+      scanResult.categoryScores.speed.reasons       = ['PageSpeed mobile score: ' + p + '/100' + (psiResult.lcp ? ' | LCP: ' + psiResult.lcp : '')];
+      const fast = psiResult.mobileStrategy === 'FAST';
+      scanResult.categoryScores.mobileClarity.score = (fast && p >= 75) ? 19 : (fast && p >= 50) ? 15 : p >= 60 ? 12 : p >= 50 ? 10 : 4;
+      scanResult.categoryScores.mobileClarity.reasons = [psiResult.mobileStrategy ? 'Mobile category: ' + psiResult.mobileStrategy : 'Mobile data from browser'];
+      // Recalculate total
+      const cats = scanResult.categoryScores;
+      scanResult.totalScore = Math.min(
+        Object.values(cats).reduce((a, c) => a + c.score, 0), 100
+      );
+      scanResult.fallbackFlags.pageSpeedFailed = false;
+      scanResult.scanMode = scanResult.fallbackFlags.screenshotFailed || scanResult.fallbackFlags.homepageFetchFailed ? 'partial_live' : 'live';
+    }
+
+    // Ensure minimum perceived scan duration
+    const elapsed   = Date.now() - scanStartTime;
+    const remaining = Math.max(0, MIN_SCAN_MS - elapsed);
+    if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+
     renderResults(scanResult);
     showState('state-results');
 
@@ -1072,14 +1162,16 @@ async function startScan() {
 
 /* ─── RENDER RESULTS ─────────────────────────────────────────────────────── */
 function renderResults(data) {
-  const score   = data.totalScore;
-const scores  = {
-  speed:          data.categoryScores.speed.score,
-  mobileClarity:  data.categoryScores.mobileClarity.score,
-  ctaStrength:    data.categoryScores.ctaStrength.score,
-  trustSignals:   data.categoryScores.trustSignals.score,
-  localRelevance: data.categoryScores.localRelevance.score,
-};
+  // Support both new shape (totalScore/categoryScores) and old shape (score.total)
+  const score  = data.totalScore ?? data.score?.total ?? 0;
+  const cats   = data.categoryScores || {};
+  const scores = {
+    speed:          cats.speed?.score          ?? data.score?.breakdown?.speed          ?? 10,
+    mobileClarity:  cats.mobileClarity?.score  ?? data.score?.breakdown?.mobileClarity  ?? 10,
+    ctaStrength:    cats.ctaStrength?.score     ?? data.score?.breakdown?.ctaStrength    ?? 10,
+    trustSignals:   cats.trustSignals?.score    ?? data.score?.breakdown?.trustSignals   ?? 10,
+    localRelevance: cats.localRelevance?.score  ?? data.score?.breakdown?.localRelevance ?? 10,
+  };
 
   // ── Score circle ────────────────────────────────────────────────────────
   const tier = score >= 70 ? 'good' : score >= 45 ? 'fair' : 'poor';
@@ -1106,36 +1198,35 @@ const scores  = {
 
   // ── Headline ─────────────────────────────────────────────────────────────
   const headlines = {
-    poor: 'Your Site Is Likely Costing You Significant Work',
-    fair: 'Your Site Has Room to Win Noticeably More Jobs',
-    good: 'Your Site Is Performing Well — Let\'s Push Further'
+    poor: data.summary?.headline || 'Your Site Is Likely Costing You Significant Work',
+    fair: data.summary?.headline || 'Your Site Has Room to Win Noticeably More Jobs',
+    good: data.summary?.headline || 'Your Site Is Performing Well — Let\'s Push Further'
   };
   const subs = {
-    poor: `Based on live signals, your ${data.trade} site has several issues that are preventing potential customers from contacting you.`,
-    fair: `Some good elements present, but key conversion signals are missing. You\'re likely losing a notable share of possible enquiries.`,
-    good: `Strong foundations. With a few targeted improvements you could convert even more visitors into paying customers.`
+    poor: data.summary?.body || `Based on live signals, your ${data.trade} site has several issues preventing potential customers from contacting you.`,
+    fair: data.summary?.body || `Some good elements present, but key conversion signals are missing. You're likely losing a notable share of possible enquiries.`,
+    good: data.summary?.body || `Strong foundations. With a few targeted improvements you could convert even more visitors into paying customers.`
   };
-  document.getElementById('results-eyebrow').textContent   = `Score for ${data.domain}`;
-  document.getElementById('results-headline').textContent  = headlines[tier];
-  document.getElementById('results-sub').textContent       = subs[tier];
+  document.getElementById('results-eyebrow').textContent  = `Score for ${data.domain || data.websiteUrl || ''}`;
+  document.getElementById('results-headline').textContent = headlines[tier];
+  document.getElementById('results-sub').textContent      = subs[tier];
 
   // ── Missed enquiries ──────────────────────────────────────────────────────
-  if (data.missedEnquiries?.min != null) {
-    document.getElementById('missed-number').textContent = data.missedEnquiries.label;
-document.getElementById('missed-label').textContent  = 'estimated monthly jobs potentially being missed';
-document.getElementById('missed-card').style.display = 'flex';
-} else if (false) {
-document.getElementById('missed-number').textContent = '';
-    document.getElementById('missed-label').textContent  = `of potential enquiries may not be converting`;
+  const mi = data.missedEnquiries || data.missed;
+  if (mi?.label) {
+    document.getElementById('missed-number').textContent = mi.label;
+    document.getElementById('missed-label').textContent  = mi.basis === 'goal'
+      ? 'estimated monthly jobs potentially being missed'
+      : 'of potential enquiries may not be converting';
     document.getElementById('missed-card').style.display = 'flex';
   }
 
   // ── Fallback notice ───────────────────────────────────────────────────────
   const flags = data.fallbackFlags || {};
   const failedServices = [];
-  if (flags.pagespeed) failedServices.push('PageSpeed');
-  if (flags.screenshot) failedServices.push('Screenshot');
-  if (flags.homepage) failedServices.push('Homepage analysis');
+  if (flags.pageSpeedFailed)     failedServices.push('PageSpeed');
+  if (flags.screenshotFailed)    failedServices.push('Screenshot');
+  if (flags.homepageFetchFailed) failedServices.push('Homepage analysis');
   if (failedServices.length) {
     document.getElementById('fallback-text').textContent =
       `Some services were unavailable during this scan (${failedServices.join(', ')}). Score is partially estimated. A full manual audit is recommended.`;
@@ -1143,7 +1234,7 @@ document.getElementById('missed-number').textContent = '';
   }
 
   // ── Screenshot ─────────────────────────────────────────────────────────────
-  document.getElementById('screenshot-url-bar').textContent = data.url;
+  document.getElementById('screenshot-url-bar').textContent = data.websiteUrl || data.url || '';
   const slot = document.getElementById('screenshot-slot');
   if (data.screenshotUrl) {
     slot.innerHTML = `<img class="screenshot-img" src="${escapeHtml(data.screenshotUrl)}" alt="Homepage preview of ${escapeHtml(data.domain)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=screenshot-placeholder><span>Preview unavailable</span></div>'">`;
@@ -1182,11 +1273,12 @@ document.getElementById('missed-number').textContent = '';
   }, 300);
 
   // ── Issues ─────────────────────────────────────────────────────────────────
-  const issuesList = document.getElementById('issues-list');
+  const issuesList  = document.getElementById('issues-list');
   const issuesTitle = document.getElementById('issues-title');
-  if (data.issues?.length) {
+  const issuesData  = data.issues || [];
+  if (issuesData.length) {
     issuesTitle.style.display = 'block';
-    issuesList.innerHTML = data.issues.map(issue => `
+    issuesList.innerHTML = issuesData.map(issue => `
       <li class="issue-item">
         <span class="issue-icon">⚠</span>
         <span>${escapeHtml(issue)}</span>
@@ -1196,9 +1288,10 @@ document.getElementById('missed-number').textContent = '';
   // ── Fixes ──────────────────────────────────────────────────────────────────
   const fixesList  = document.getElementById('fixes-list');
   const fixesTitle = document.getElementById('fixes-title');
-  if (data.priorityFixes?.length) {
+  const fixesData  = data.priorityFixes || data.fixes || [];
+  if (fixesData.length) {
     fixesTitle.style.display = 'block';
-    fixesList.innerHTML = data.priorityFixes.map((fix, i) => `
+    fixesList.innerHTML = fixesData.map((fix, i) => `
       <li class="fix-item">
         <span class="fix-num">${i + 1}</span>
         <span>${escapeHtml(fix)}</span>
