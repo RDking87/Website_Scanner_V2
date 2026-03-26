@@ -1030,21 +1030,11 @@ async function fetchPSIFromBrowser(url) {
     return null;
   }
   try {
-    const fields = [
-      'lighthouseResult/categories/performance/score',
-      'lighthouseResult/audits/largest-contentful-paint/displayValue',
-      'lighthouseResult/audits/cumulative-layout-shift/displayValue',
-      'lighthouseResult/audits/first-contentful-paint/displayValue',
-      'lighthouseResult/audits/total-blocking-time/displayValue',
-      'loadingExperience/overall_category'
-    ].join(',');
-
-    const apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
-      + '?url=' + encodeURIComponent(url)
-      + '&strategy=mobile'
-      + '&key=' + PSI_API_KEY
-      + '&category=performance'
-      + '&fields=' + fields;
+const apiUrl = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
+  + '?url=' + encodeURIComponent(url)
+  + '&strategy=mobile'
+  + '&key=' + PSI_API_KEY
+  + '&category=performance';
 
     const ctrl  = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 25000);
