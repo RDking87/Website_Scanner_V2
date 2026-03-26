@@ -876,6 +876,83 @@ body::before{
   box-shadow:0 4px 20px rgba(249,115,22,0.35);
 }
 .success-book-btn:hover{background:var(--orange-dark);box-shadow:0 6px 28px rgba(249,115,22,0.45)}
+
+/* ─── QUALIFIER CARDS ────────────────────────────────────────────────────── */
+.qualifier-block{
+  margin-bottom:22px;
+}
+.qualifier-headline{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:17px;
+  margin-bottom:5px;
+}
+.qualifier-sub{
+  font-size:13px;
+  color:var(--white-50);
+  margin-bottom:14px;
+  line-height:1.45;
+}
+.qualifier-options{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.qualifier-option{
+  background:var(--navy-light);
+  border:1.5px solid var(--navy-border);
+  border-radius:var(--radius);
+  padding:13px 16px;
+  font-size:14px;
+  font-weight:500;
+  color:var(--white-80);
+  cursor:pointer;
+  text-align:left;
+  transition:border-color .18s, background .18s, color .18s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+}
+.qualifier-option:hover{
+  border-color:rgba(249,115,22,0.5);
+  background:rgba(249,115,22,0.06);
+  color:#fff;
+}
+.qualifier-option.selected{
+  border-color:var(--orange);
+  background:rgba(249,115,22,0.12);
+  color:#fff;
+}
+.qualifier-option-dot{
+  width:16px;height:16px;
+  border-radius:50%;
+  border:2px solid var(--navy-border);
+  flex-shrink:0;
+  transition:border-color .18s, background .18s;
+}
+.qualifier-option.selected .qualifier-option-dot{
+  border-color:var(--orange);
+  background:var(--orange);
+}
+.qualifier-hint{
+  font-size:12px;
+  color:rgba(249,115,22,0.8);
+  margin-top:10px;
+  min-height:18px;
+  line-height:1.45;
+  transition:opacity .2s;
+}
+
+/* ─── SCAN WAITING STATE ─────────────────────────────────────────────────── */
+.scan-waiting-msg{
+  font-size:13px;
+  color:var(--white-50);
+  margin-top:14px;
+  text-align:center;
+  animation:fadeInUp .4s ease;
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -998,6 +1075,7 @@ body::before{
       <div class="scan-title">Scanning your site…</div>
       <div class="scan-url" id="scan-display-url"></div>
       <div class="scan-steps" id="scan-steps"></div>
+      <div class="scan-waiting-msg" id="scan-waiting-msg" style="display:none">Analysing speed data — almost there…</div>
     </div>
   </section>
 
@@ -1111,6 +1189,27 @@ body::before{
         Book a free review if you want us to talk you through the biggest issues live, or request the full breakdown by email.
       </div>
 
+      <!-- Qualifier -->
+      <div class="qualifier-block">
+        <div class="qualifier-headline">What's holding your website back right now?</div>
+        <div class="qualifier-sub">Pick the closest one — we'll focus on this in your review.</div>
+        <div class="qualifier-options">
+          <button class="qualifier-option" onclick="selectQualifier(this,'enquiries')" type="button">
+            <span class="qualifier-option-dot"></span>
+            I'm not getting enough enquiries
+          </button>
+          <button class="qualifier-option" onclick="selectQualifier(this,'calls')" type="button">
+            <span class="qualifier-option-dot"></span>
+            People visit, but I'm not getting calls
+          </button>
+          <button class="qualifier-option" onclick="selectQualifier(this,'consistency')" type="button">
+            <span class="qualifier-option-dot"></span>
+            I want to win more jobs consistently
+          </button>
+        </div>
+        <div class="qualifier-hint" id="qualifier-hint"></div>
+      </div>
+
       <div id="lead-error" class="error-banner"></div>
 
       <div class="form-row">
@@ -1172,7 +1271,8 @@ const PSI_API_KEY      = 'AIzaSyC1mlD1VaZ_QxeW8gsQ2oEO70irol2tGeI'; // ← paste
 const BOOKING_URL      = 'https://calendly.com/your-link'; // ← paste your Calendly URL here
 
 /* ─── STATE ──────────────────────────────────────────────────────────────── */
-let scanResult = null;
+let scanResult     = null;
+let qualifierValue = null; // stores selected qualifier option
 
 /* ─── SHOW STATE ─────────────────────────────────────────────────────────── */
 function showState(id) {
@@ -1190,6 +1290,9 @@ const SCAN_STEPS = [
   'Checking local relevance',
   'Building your score',
 ];
+
+// Tracks active animation interval so we can cancel it
+let _scanAnimInterval = null;
 
 function renderScanSteps(activeIdx) {
   const container = document.getElementById('scan-steps');
@@ -1211,12 +1314,58 @@ function renderScanSteps(activeIdx) {
   }).join('');
 }
 
+/**
+ * Animate steps through the first (SCAN_STEPS.length - 1) steps over totalMs.
+ * The LAST step ("Building your score") stays as active/spinning until
+ * markScanComplete() is called — so the UI never looks stuck.
+ */
 function animateScanSteps(totalMs) {
+  // Clear any previous animation
+  if (_scanAnimInterval) clearInterval(_scanAnimInterval);
+
+  const stepsBeforeLast = SCAN_STEPS.length - 1; // 5 steps before the final one
   const perStep = totalMs / SCAN_STEPS.length;
-  SCAN_STEPS.forEach((_, i) => {
-    setTimeout(() => renderScanSteps(i), i * perStep);
-  });
-  setTimeout(() => renderScanSteps(SCAN_STEPS.length), totalMs - 100);
+  let currentStep = 0;
+
+  renderScanSteps(0);
+
+  _scanAnimInterval = setInterval(() => {
+    currentStep++;
+    if (currentStep < stepsBeforeLast) {
+      renderScanSteps(currentStep);
+    } else if (currentStep === stepsBeforeLast) {
+      // Arrive at last step — keep spinner running, show waiting message
+      renderScanSteps(stepsBeforeLast);
+      const waitMsg = document.getElementById('scan-waiting-msg');
+      if (waitMsg) waitMsg.style.display = 'block';
+      clearInterval(_scanAnimInterval);
+      _scanAnimInterval = null;
+    }
+  }, perStep);
+}
+
+/** Call this when all API data is ready — completes the final step. */
+function markScanComplete() {
+  if (_scanAnimInterval) { clearInterval(_scanAnimInterval); _scanAnimInterval = null; }
+  renderScanSteps(SCAN_STEPS.length); // all ticked
+  const waitMsg = document.getElementById('scan-waiting-msg');
+  if (waitMsg) waitMsg.style.display = 'none';
+}
+
+/* ─── QUALIFIER HANDLER ──────────────────────────────────────────────────── */
+const QUALIFIER_HINTS = {
+  enquiries:   "We'll focus on where your site may be losing potential leads.",
+  calls:       "We'll focus on trust, CTAs and why visitors may be hesitating.",
+  consistency: "We'll focus on the biggest opportunities to turn your site into a stronger lead source."
+};
+
+function selectQualifier(btn, value) {
+  // Deselect all, select clicked
+  document.querySelectorAll('.qualifier-option').forEach(el => el.classList.remove('selected'));
+  btn.classList.add('selected');
+  qualifierValue = value;
+  const hint = document.getElementById('qualifier-hint');
+  if (hint) hint.textContent = QUALIFIER_HINTS[value] || '';
 }
 
 /* ─── BROWSER-SIDE PAGESPEED ─────────────────────────────────────────────── */
@@ -1283,65 +1432,69 @@ async function startScan() {
     return;
   }
 
+  // Reset qualifier
+  qualifierValue = null;
+  document.querySelectorAll('.qualifier-option').forEach(el => el.classList.remove('selected'));
+  const qHint = document.getElementById('qualifier-hint');
+  if (qHint) qHint.textContent = '';
+
   // Show scanning state
   document.getElementById('scan-display-url').textContent = rawUrl;
-  renderScanSteps(0);
+
+  // Animate steps over 9s to reach "Building your score" — then hold spinner
+  // until real data arrives. MIN of 4s so it never feels instant.
+  const MIN_SCAN_MS   = 4000;
+  const scanStartTime = Date.now();
+  animateScanSteps(9000);
   showState('state-scanning');
 
-  // Minimum perceived scan time — feels thorough even if APIs are fast
-  const MIN_SCAN_MS   = 11000;
-  const scanStartTime = Date.now();
-
-  // Animate steps over the minimum duration
-  animateScanSteps(MIN_SCAN_MS);
-
   try {
-    // Run PageSpeed from browser + backend scan in parallel
-    // Run PSI first (browser), then backend — sequential avoids abort race
-  const psiResult = await fetchPSIFromBrowser(rawUrl);
+    // PSI runs from browser (sequential — avoids abort race with backend)
+    const psiResult = await fetchPSIFromBrowser(rawUrl);
 
-  const backendRes = await fetch(BACKEND_URL, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
-  });
+    const backendRes = await fetch(BACKEND_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ url: rawUrl, trade, monthlyJobsGoal: jobs || null })
+    });
 
-  if (!backendRes.ok) {
-    const err = await backendRes.json().catch(() => ({}));
-    throw new Error(err.message || `Server error ${backendRes.status}`);
-  }
+    if (!backendRes.ok) {
+      const err = await backendRes.json().catch(() => ({}));
+      throw new Error(err.message || `Server error ${backendRes.status}`);
+    }
 
     scanResult = await backendRes.json();
 
     // Inject browser PSI results into scan payload if backend PSI failed
     if (psiResult && scanResult.fallbackFlags?.pageSpeedFailed) {
       scanResult._browserPsi = psiResult;
-      // Override speed + mobile scores with real browser PSI data
       const p = psiResult.performanceScore;
       scanResult.categoryScores.speed.score         = p >= 90 ? 20 : p >= 75 ? 16 : p >= 50 ? 10 : p >= 30 ? 5 : 2;
       scanResult.categoryScores.speed.reasons       = ['PageSpeed mobile score: ' + p + '/100' + (psiResult.lcp ? ' | LCP: ' + psiResult.lcp : '')];
       const fast = psiResult.mobileStrategy === 'FAST';
       scanResult.categoryScores.mobileClarity.score = (fast && p >= 75) ? 19 : (fast && p >= 50) ? 15 : p >= 60 ? 12 : p >= 50 ? 10 : 4;
       scanResult.categoryScores.mobileClarity.reasons = [psiResult.mobileStrategy ? 'Mobile category: ' + psiResult.mobileStrategy : 'Mobile data from browser'];
-      // Recalculate total
       const cats = scanResult.categoryScores;
-      scanResult.totalScore = Math.min(
-        Object.values(cats).reduce((a, c) => a + c.score, 0), 100
-      );
+      scanResult.totalScore = Math.min(Object.values(cats).reduce((a, c) => a + c.score, 0), 100);
       scanResult.fallbackFlags.pageSpeedFailed = false;
       scanResult.scanMode = scanResult.fallbackFlags.screenshotFailed || scanResult.fallbackFlags.homepageFetchFailed ? 'partial_live' : 'live';
     }
 
-    // Ensure minimum perceived scan duration
+    // Ensure minimum perceived duration, then complete the animation
     const elapsed   = Date.now() - scanStartTime;
     const remaining = Math.max(0, MIN_SCAN_MS - elapsed);
     if (remaining > 0) await new Promise(r => setTimeout(r, remaining));
+
+    // Tick off the final step visually before showing results
+    markScanComplete();
+    await new Promise(r => setTimeout(r, 400));
 
     renderResults(scanResult);
     showState('state-results');
 
   } catch (err) {
     console.error('[Scan]', err);
+    markScanComplete();
     showState('state-input');
     errEl.textContent = `Scan failed: ${err.message}. Please check the URL and try again.`;
     errEl.style.display = 'block';
@@ -1522,7 +1675,7 @@ async function bookAndCapture(e) {
     fetch(LEAD_BACKEND_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone, intent: 'booking', scanPayload: scanResult })
+      body: JSON.stringify({ name, email, phone, intent: 'booking', qualifier: qualifierValue, scanPayload: scanResult })
     }).catch(() => {});
   }
   openBooking(null);
@@ -1558,7 +1711,7 @@ async function submitLead(intent) {
     const res = await fetch(LEAD_BACKEND_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, phone, intent: intent || 'report', scanPayload: scanResult })
+      body: JSON.stringify({ name, email, phone, intent: intent || 'report', qualifier: qualifierValue, scanPayload: scanResult })
     });
     if (!res.ok) throw new Error(`Server error ${res.status}`);
     showState('state-success');
