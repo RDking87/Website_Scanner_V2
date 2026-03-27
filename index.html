@@ -367,29 +367,40 @@ body::before{
 }
 .findings-section-title:first-child{margin-top:0}
 
-/* Teaser cutoff */
+/* Teaser cutoff — stronger fade to indicate hidden content */
 .findings-preview{
   position:relative;
+  padding-bottom:80px;
 }
 .findings-cutoff{
   position:absolute;
   bottom:0;left:0;right:0;
-  height:60px;
-  background:linear-gradient(to bottom, transparent, var(--navy) 90%);
+  height:140px;
+  background:linear-gradient(to bottom, transparent 0%, rgba(11,18,32,0.7) 40%, var(--navy) 100%);
   pointer-events:none;
   transition:opacity .4s;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding-bottom:16px;
 }
-.findings-cutoff.hidden{opacity:0}
+.findings-cutoff.hidden{opacity:0;pointer-events:none}
+.findings-cutoff-hint{
+  font-size:12px;
+  color:var(--white-50);
+  font-style:italic;
+  text-align:center;
+}
 
 /* Full findings — hidden until unlock */
 .findings-full{
   overflow:hidden;
   max-height:0;
   opacity:0;
-  transition:max-height .6s ease, opacity .5s ease;
+  transition:max-height .7s ease, opacity .5s ease;
 }
 .findings-full.revealed{
-  max-height:2000px;
+  max-height:2400px;
   opacity:1;
 }
 
@@ -402,7 +413,7 @@ body::before{
   border:1px solid rgba(34,197,94,0.2);
   border-radius:var(--radius);
   padding:11px 16px;
-  margin-bottom:16px;
+  margin-bottom:20px;
   font-size:14px;
   color:var(--green);
   font-weight:500;
@@ -410,26 +421,66 @@ body::before{
 }
 .findings-unlock-strip.visible{display:flex}
 
-/* Inline lead form */
-.inline-lead{
+/* ─── MODAL ──────────────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,10,20,0.82);
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s;
+}
+.modal-overlay.open{
+  opacity:1;
+  pointer-events:all;
+}
+.modal-box{
   background:var(--navy-card);
   border:1px solid var(--navy-border);
   border-radius:var(--radius-lg);
-  padding:22px;
-  margin-top:8px;
+  padding:32px 28px 28px;
+  width:100%;
+  max-width:460px;
+  position:relative;
+  transform:translateY(12px);
+  transition:transform .25s;
+  max-height:90vh;
+  overflow-y:auto;
 }
-.inline-lead-title{
+.modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-close{
+  position:absolute;
+  top:14px;right:16px;
+  background:transparent;
+  border:none;
+  color:var(--white-50);
+  font-size:22px;
+  cursor:pointer;
+  line-height:1;
+  padding:4px;
+  transition:color .15s;
+}
+.modal-close:hover{color:var(--white)}
+.modal-title{
   font-family:var(--font-display);
-  font-weight:800;
-  font-size:17px;
-  margin-bottom:4px;
+  font-weight:900;
+  font-size:24px;
+  margin-bottom:6px;
+  padding-right:28px;
 }
-.inline-lead-sub{
+.modal-body{
   font-size:13px;
   color:var(--white-50);
-  margin-bottom:18px;
-  line-height:1.45;
+  margin-bottom:22px;
+  line-height:1.55;
 }
+
+/* ─── SCAN WAITING STATE ─────────────────────────────────────────────────── */
 
 /* Fallback notice */
 .action-fallback{
@@ -1525,7 +1576,7 @@ body::before{
       <div class="results-left">
         <div class="findings-panel">
 
-          <!-- Teaser: 2 bars + 1 issue + 1 fix (always visible) -->
+          <!-- Teaser: 2 bars + 1 issue + 1 fix -->
           <div class="findings-preview" id="findings-preview">
             <div class="findings-section-title">Score Breakdown</div>
             <div class="breakdown-bars" id="breakdown-bars-teaser"></div>
@@ -1540,8 +1591,10 @@ body::before{
               <ul class="fixes-list" id="teaser-fix"></ul>
             </div>
 
-            <!-- Fade cutoff — hidden after unlock -->
-            <div class="findings-cutoff" id="findings-cutoff"></div>
+            <!-- Strong fade cutoff -->
+            <div class="findings-cutoff" id="findings-cutoff">
+              <span class="findings-cutoff-hint">More analysis hidden below</span>
+            </div>
           </div>
 
           <!-- Unlock strip (shown after unlock) -->
@@ -1554,12 +1607,10 @@ body::before{
           <div class="findings-full" id="findings-full">
             <div class="findings-section-title">Full Score Breakdown</div>
             <div class="breakdown-bars" id="breakdown-bars"></div>
-
             <div id="issues-title" style="display:none">
               <div class="findings-section-title" style="margin-top:20px">What's Costing You Work</div>
             </div>
             <ul class="issues-list" id="issues-list"></ul>
-
             <div id="fixes-title" style="display:none">
               <div class="findings-section-title" style="margin-top:20px">Fastest Fixes</div>
             </div>
@@ -1579,9 +1630,7 @@ body::before{
               <svg viewBox="0 0 100 100" width="90" height="90">
                 <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
                 <circle class="score-circle-fill" id="score-ring" cx="50" cy="50" r="42"
-                  stroke-dasharray="264"
-                  stroke-dashoffset="264"
-                />
+                  stroke-dasharray="264" stroke-dashoffset="264"/>
               </svg>
               <div class="score-circle-text">
                 <span class="score-number" id="score-number-el">0</span>
@@ -1605,14 +1654,10 @@ body::before{
           </div>
 
           <!-- Urgency -->
-          <div class="action-urgency" id="urgency-callout">
-            <span id="urgency-text"></span>
-          </div>
+          <div class="action-urgency" id="urgency-callout"><span id="urgency-text"></span></div>
 
-          <!-- Fallback notice -->
-          <div class="action-fallback" id="fallback-notice">
-            <span id="fallback-text"></span>
-          </div>
+          <!-- Fallback -->
+          <div class="action-fallback" id="fallback-notice"><span id="fallback-text"></span></div>
 
           <!-- Screenshot -->
           <div class="action-screenshot">
@@ -1638,73 +1683,23 @@ body::before{
 
           <hr class="action-divider">
 
-          <!-- PRE-UNLOCK: Unlock CTA -->
+          <!-- PRE-UNLOCK: single CTA -->
           <div class="action-pre-unlock" id="action-pre-unlock">
-            <div class="action-unlock-headline">Unlock The Full Breakdown</div>
-            <div class="action-unlock-body">Get the exact issues and fastest fixes for your site.</div>
-            <button class="action-btn-primary" onclick="gateEmail()">Unlock By Email →</button>
-            <a class="action-btn-secondary" href="#" onclick="openBooking(event)">Book Free Review →</a>
-            <div class="action-support">No obligation. No hard sell. Just clear next steps.</div>
+            <div class="action-unlock-headline">See Exactly What's Costing You Jobs</div>
+            <div class="action-unlock-body">Your full score breakdown, exact issues and fastest fixes are ready.</div>
+            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
+            <div class="action-support">No obligation. Free to request.</div>
           </div>
 
-          <!-- POST-UNLOCK: Book CTA -->
+          <!-- POST-UNLOCK: book CTA -->
           <div class="action-post-unlock" id="action-post-unlock">
             <div class="action-unlock-headline">Want Us To Walk You Through It?</div>
-            <div class="action-unlock-body">Book a free 10-minute review and we'll cover the biggest issues and fastest wins for your site.</div>
+            <div class="action-unlock-body">Book a free 10-minute review and we'll cover the biggest wins for your site.</div>
             <a class="action-btn-primary" href="#" onclick="openBooking(event)">Book My Free Review →</a>
-            <div class="action-support">No obligation. No hard sell. Just a clear walkthrough.</div>
+            <div class="action-support">No obligation. No hard sell.</div>
           </div>
 
         </div><!-- /.action-panel -->
-
-        <!-- Inline lead form — scrolled to on gateEmail() -->
-        <div class="inline-lead" id="lead-card-section" style="margin-top:20px">
-          <div class="inline-lead-title">Unlock Your Full Breakdown</div>
-          <div class="inline-lead-sub">Enter your details and we'll reveal the exact issues and fastest fixes for your site.</div>
-
-          <!-- Qualifier -->
-          <div class="qualifier-block">
-            <div class="qualifier-headline" style="font-size:15px">What's holding your website back?</div>
-            <div class="qualifier-sub">Pick the closest one.</div>
-            <div class="qualifier-options">
-              <button class="qualifier-option" onclick="selectQualifier(this,'enquiries')" type="button">
-                <span class="qualifier-option-dot"></span>
-                Not getting enough enquiries
-              </button>
-              <button class="qualifier-option" onclick="selectQualifier(this,'calls')" type="button">
-                <span class="qualifier-option-dot"></span>
-                Visits but no calls
-              </button>
-              <button class="qualifier-option" onclick="selectQualifier(this,'consistency')" type="button">
-                <span class="qualifier-option-dot"></span>
-                Want more consistent jobs
-              </button>
-            </div>
-            <div class="qualifier-hint" id="qualifier-hint"></div>
-          </div>
-
-          <div id="lead-error" class="error-banner"></div>
-
-          <div class="form-row">
-            <label class="form-label" for="inp-name">Your Name</label>
-            <input id="inp-name" class="form-input" type="text" placeholder="John Smith" autocomplete="name">
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="inp-email">Email Address</label>
-            <input id="inp-email" class="form-input" type="email" placeholder="john@yoursite.co.uk" autocomplete="email">
-          </div>
-          <div class="form-row">
-            <label class="form-label" for="inp-phone">Phone (optional)</label>
-            <input id="inp-phone" class="form-input" type="tel" placeholder="07700 900000" autocomplete="tel">
-          </div>
-
-          <button class="action-btn-primary" id="btn-lead-submit" onclick="submitLead('unlock')">Unlock My Full Breakdown →</button>
-
-          <div class="disclaimer" style="margin-top:12px">
-            No spam. No obligation. Automated scan — free review by a real human on request.
-          </div>
-        </div>
-
       </div><!-- /.results-right -->
 
     </div><!-- /.results-split -->
@@ -1717,13 +1712,64 @@ body::before{
       <div class="success-title">You're In</div>
       <p class="success-sub">
         We've received your details and we'll be in touch shortly.
-        If you want to book a review call, use the link below.
+        Use the link below to book your free review call.
       </p>
       <a class="success-book-btn" href="#" onclick="openBooking(event)">Book My Free Review →</a>
     </div>
   </section>
 
 </div><!-- /.app -->
+
+<!-- ─── MODAL ────────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalIfOverlay(event)">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title-el">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
+    <div class="modal-title" id="modal-title-el">Get Your Full Breakdown</div>
+    <div class="modal-body">Enter your details and we'll reveal the exact issues and fastest fixes for your site.</div>
+
+    <!-- Qualifier -->
+    <div class="qualifier-block">
+      <div class="qualifier-headline" style="font-size:15px;margin-bottom:4px">What's holding your website back?</div>
+      <div class="qualifier-sub">Pick the closest one.</div>
+      <div class="qualifier-options">
+        <button class="qualifier-option" onclick="selectQualifier(this,'enquiries')" type="button">
+          <span class="qualifier-option-dot"></span>
+          Not getting enough enquiries
+        </button>
+        <button class="qualifier-option" onclick="selectQualifier(this,'calls')" type="button">
+          <span class="qualifier-option-dot"></span>
+          Visits but no calls
+        </button>
+        <button class="qualifier-option" onclick="selectQualifier(this,'consistency')" type="button">
+          <span class="qualifier-option-dot"></span>
+          Want more consistent jobs
+        </button>
+      </div>
+      <div class="qualifier-hint" id="qualifier-hint"></div>
+    </div>
+
+    <div id="lead-error" class="error-banner"></div>
+
+    <div class="form-row">
+      <label class="form-label" for="inp-name">Your Name</label>
+      <input id="inp-name" class="form-input" type="text" placeholder="John Smith" autocomplete="name">
+    </div>
+    <div class="form-row">
+      <label class="form-label" for="inp-email">Email Address</label>
+      <input id="inp-email" class="form-input" type="email" placeholder="john@yoursite.co.uk" autocomplete="email">
+    </div>
+    <div class="form-row" style="margin-bottom:20px">
+      <label class="form-label" for="inp-phone">Phone (optional)</label>
+      <input id="inp-phone" class="form-input" type="tel" placeholder="07700 900000" autocomplete="tel">
+    </div>
+
+    <button class="action-btn-primary" id="btn-lead-submit" onclick="submitLead('unlock')">Reveal My Full Breakdown →</button>
+
+    <div class="disclaimer" style="margin-top:12px;text-align:center;font-size:11px;color:var(--white-50);line-height:1.5">
+      No spam. No obligation. Automated scan — free review by a real human on request.
+    </div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -1739,7 +1785,7 @@ body::before{
 const BACKEND_URL      = '/.netlify/functions/scan';  // ← Netlify function
 const LEAD_BACKEND_URL = '/.netlify/functions/lead';  // ← Netlify function
 const PSI_API_KEY      = 'AIzaSyC1mlD1VaZ_QxeW8gsQ2oEO70irol2tGeI'; // ← paste key here
-const BOOKING_URL      = 'https://calendly.com/rosch-rdklive/10mins'; // ← paste your Calendly URL here
+const BOOKING_URL      = 'https://calendly.com/your-link'; // ← paste your Calendly URL here
 
 /* ─── STATE ──────────────────────────────────────────────────────────────── */
 let scanResult      = null;
@@ -1983,13 +2029,11 @@ function renderResults(data) {
     const strip  = document.getElementById('unlock-strip');
     const pre    = document.getElementById('action-pre-unlock');
     const post   = document.getElementById('action-post-unlock');
-    const lead   = document.getElementById('lead-card-section');
     if (cutoff) cutoff.classList.remove('hidden');
     if (full)   full.classList.remove('revealed');
     if (strip)  strip.classList.remove('visible');
     if (pre)    pre.classList.remove('hidden');
     if (post)   post.classList.remove('visible');
-    if (lead)   lead.style.display = '';
   }
 
   // Support both new shape (totalScore/categoryScores) and old shape (score.total)
@@ -2149,53 +2193,78 @@ function renderResults(data) {
   }
 }
 
-/* ─── SOFT GATE ──────────────────────────────────────────────────────────── */
+/* ─── MODAL ──────────────────────────────────────────────────────────────── */
+function openModal() {
+  const overlay = document.getElementById('modal-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      const nameField = document.getElementById('inp-name');
+      if (nameField) nameField.focus();
+    }, 250);
+  }
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function closeModalIfOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* ─── UNLOCK DETAILS ─────────────────────────────────────────────────────── */
 function unlockDetails() {
   if (detailsUnlocked) return;
   detailsUnlocked = true;
 
-  // Left panel: hide cutoff, reveal full findings
-  const cutoff   = document.getElementById('findings-cutoff');
-  const full     = document.getElementById('findings-full');
-  const strip    = document.getElementById('unlock-strip');
+  closeModal();
+
+  // Left panel: remove cutoff, reveal full findings
+  const cutoff = document.getElementById('findings-cutoff');
+  const full   = document.getElementById('findings-full');
+  const strip  = document.getElementById('unlock-strip');
   if (cutoff) cutoff.classList.add('hidden');
   if (full)   full.classList.add('revealed');
   if (strip)  strip.classList.add('visible');
 
-  // Right panel: swap pre/post unlock sections, hide lead form
-  const pre      = document.getElementById('action-pre-unlock');
-  const post     = document.getElementById('action-post-unlock');
-  const leadCard = document.getElementById('lead-card-section');
-  if (pre)      pre.classList.add('hidden');
-  if (post)     post.classList.add('visible');
-  if (leadCard) leadCard.style.display = 'none';
+  // Right panel: swap pre/post unlock
+  const pre  = document.getElementById('action-pre-unlock');
+  const post = document.getElementById('action-post-unlock');
+  if (pre)  pre.classList.add('hidden');
+  if (post) post.classList.add('visible');
+
+  // Scroll left panel into view smoothly
+  setTimeout(() => {
+    const preview = document.getElementById('findings-preview');
+    if (preview) preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+function gateEmail() {
+  openModal();
 }
 
 function gateBook() {
   unlockDetails();
-  // Small delay so user sees unlock before modal/tab opens
-  setTimeout(() => openBooking(null), 300);
-}
-
-function gateEmail() {
-  const leadCard = document.getElementById('lead-card-section');
-  if (leadCard) {
-    leadCard.scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => {
-      const nameField = document.getElementById('inp-name');
-      if (nameField) nameField.focus();
-    }, 450);
-  }
+  setTimeout(() => openBooking(null), 200);
 }
 
 /* ─── BOOKING + SCROLL HELPERS ───────────────────────────────────────────── */
 function openBooking(e) {
   if (e) e.preventDefault();
-  unlockDetails();
   if (BOOKING_URL && BOOKING_URL !== 'https://calendly.com/your-link') {
     window.open(BOOKING_URL, '_blank', 'noopener');
   } else {
-    document.getElementById('lead-card-section').scrollIntoView({ behavior: 'smooth' });
+    openModal();
   }
 }
 
@@ -2252,8 +2321,7 @@ async function submitLead(intent) {
       body: JSON.stringify({ name, email, phone, intent: intent || 'unlock', qualifier: qualifierValue, scanPayload: scanResult })
     });
     if (!res.ok) throw new Error(`Server error ${res.status}`);
-
-    // Inline reveal — do NOT navigate away from results page
+    // unlockDetails closes the modal and reveals findings inline
     unlockDetails();
 
   } catch (err) {
