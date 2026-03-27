@@ -623,7 +623,7 @@ body::before{
   display:none;
 }
 
-/* Anchor card mobile styles */
+/* ── MOBILE ANCHOR CARD ────────────────────────────────────────────────── */
 .anchor-score-row{
   display:flex;
   align-items:center;
@@ -631,69 +631,148 @@ body::before{
   margin-bottom:14px;
 }
 .anchor-score-circle{
-  width:72px;height:72px;
+  width:74px;height:74px;
   position:relative;flex-shrink:0;
 }
 .anchor-score-circle svg{transform:rotate(-90deg)}
-.anchor-score-text{flex:1}
+.anchor-score-text{flex:1;min-width:0}
 .anchor-headline{
   font-family:var(--font-display);
   font-weight:900;
-  font-size:clamp(16px,5vw,20px);
-  line-height:1.1;
+  font-size:clamp(17px,5vw,22px);
+  line-height:1.05;
   margin-bottom:3px;
 }
-.anchor-sub{font-size:12px;color:var(--white-50);line-height:1.4}
-.anchor-body{display:flex;gap:14px;align-items:flex-start}
-.anchor-body-info{flex:1;min-width:0}
-.anchor-preview-mobile{
-  flex-shrink:0;
-  width:130px;
-  border-radius:var(--radius);
-  overflow:hidden;
-  border:1px solid var(--navy-border);
+.anchor-sub{
+  font-size:12px;
+  color:var(--white-50);
+  line-height:1.4;
 }
-.anchor-preview-header-m{
-  background:var(--navy-mid);
-  padding:5px 8px;
+
+/* Stack everything vertically — no side-by-side */
+.anchor-body{
   display:flex;
-  align-items:center;
-  gap:5px;
-  border-bottom:1px solid var(--navy-border);
+  flex-direction:column;
+  gap:0;
 }
-.anchor-dots-m{display:flex;gap:4px}
-.anchor-dot-m{width:6px;height:6px;border-radius:50%}
+.anchor-body-info{
+  width:100%;
+}
+
+/* Missed enquiries — full width, dominant */
 .anchor-missed{
   background:rgba(249,115,22,0.08);
-  border:1px solid rgba(249,115,22,0.2);
+  border:1px solid rgba(249,115,22,0.22);
   border-radius:var(--radius);
-  padding:9px 12px;
-  margin-bottom:8px;
+  padding:11px 14px;
+  margin-bottom:12px;
   display:flex;
   align-items:center;
-  gap:9px;
+  gap:11px;
+  width:100%;
 }
-.anchor-missed-icon{font-size:18px;flex-shrink:0}
+.anchor-missed-icon{font-size:20px;flex-shrink:0}
 .anchor-missed-big{
   font-family:var(--font-display);
   font-weight:900;
-  font-size:16px;
+  font-size:20px;
   color:var(--orange);
   line-height:1;
+  text-shadow:0 0 12px rgba(249,115,22,0.3);
 }
-.anchor-missed-label{font-size:10px;color:var(--white-80);margin-top:1px}
+.anchor-missed-label{
+  font-size:11px;
+  color:var(--white-80);
+  margin-top:2px;
+  line-height:1.35;
+}
+
+/* Urgency — full width */
 .anchor-urgency{
-  font-size:12px;color:#fca5a5;
-  background:rgba(239,68,68,0.06);
-  border:1px solid rgba(239,68,68,0.14);
+  font-size:11px;
+  color:rgba(252,165,165,0.85);
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.12);
   border-radius:var(--radius);
-  padding:7px 11px;line-height:1.4;display:none;
+  padding:7px 11px;
+  line-height:1.4;
+  display:none;
+  margin-bottom:12px;
 }
 .anchor-urgency.visible{display:block}
 .anchor-fallback{display:none}
-.anchor-fallback.visible{display:block}
+.anchor-fallback.visible{
+  display:block;
+  font-size:11px;
+  color:rgba(245,158,11,0.85);
+  background:rgba(245,158,11,0.06);
+  border:1px solid rgba(245,158,11,0.15);
+  border-radius:var(--radius);
+  padding:7px 11px;
+  margin-bottom:12px;
+}
 
-/* Screenshot fills the fixed-height preview container */
+/* Mobile screenshot — full width card */
+.anchor-preview-mobile{
+  width:100%;
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid var(--navy-border);
+  margin-top:0;
+}
+.anchor-preview-header-m{
+  background:var(--navy-mid);
+  padding:7px 10px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border-bottom:1px solid var(--navy-border);
+}
+.anchor-dots-m{display:flex;gap:4px;align-items:center}
+.anchor-dot-m{width:7px;height:7px;border-radius:50%}
+
+/* Screenshot inside mobile preview — fixed height */
+.anchor-preview-mobile .preview-img-wrap{
+  position:relative;
+  overflow:hidden;
+  height:185px;
+}
+.anchor-preview-mobile .preview-img-wrap::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:40px;
+  background:linear-gradient(to bottom, rgba(7,13,26,0.45), transparent);
+  z-index:1;
+  pointer-events:none;
+}
+.anchor-preview-mobile .screenshot-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+.anchor-preview-mobile .screenshot-placeholder{
+  width:100%;
+  height:185px;
+  background:var(--navy-mid);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color:var(--white-50);
+  font-size:12px;
+}
+
+/* Anchor divider */
+.anchor-divider{
+  border:none;height:1px;
+  background:linear-gradient(to right, transparent, var(--navy-border) 20%, var(--navy-border) 80%, transparent);
+  margin:16px 0;
+  display:none;
+}
 .screenshot-img{
   width:100%;
   height:100%;
@@ -2035,9 +2114,11 @@ body::before{
 
         <!-- Mobile anchor card (shown on mobile, hidden on desktop) -->
         <div class="result-anchor-card">
+
+          <!-- Row 1: score circle + headline -->
           <div class="anchor-score-row">
             <div class="anchor-score-circle">
-              <svg viewBox="0 0 100 100" width="72" height="72">
+              <svg viewBox="0 0 100 100" width="74" height="74">
                 <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
                 <circle class="score-circle-fill" id="score-ring-mobile" cx="50" cy="50" r="42"
                   stroke-dasharray="264" stroke-dashoffset="264"/>
@@ -2053,6 +2134,8 @@ body::before{
               <div class="anchor-sub" id="results-sub-mobile"></div>
             </div>
           </div>
+
+          <!-- Row 2: missed enquiries + urgency (full width, stacked) -->
           <div class="anchor-body">
             <div class="anchor-body-info">
               <div class="anchor-missed" id="missed-card-mobile" style="display:none">
@@ -2065,6 +2148,8 @@ body::before{
               <div class="anchor-urgency" id="urgency-callout-mobile"><span id="urgency-text-mobile"></span></div>
               <div class="anchor-fallback" id="fallback-notice-mobile"><span id="fallback-text-mobile"></span></div>
             </div>
+
+            <!-- Row 3: website preview (full width) -->
             <div class="anchor-preview-mobile">
               <div class="anchor-preview-header-m">
                 <div class="anchor-dots-m">
@@ -2075,16 +2160,19 @@ body::before{
               </div>
               <div class="preview-img-wrap">
                 <div id="screenshot-slot-mobile">
-                  <div class="screenshot-placeholder" style="aspect-ratio:3/4;min-height:110px;font-size:11px">
-                    <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+                  <div class="screenshot-placeholder">
+                    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
                       <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                      <circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
                       <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
                     </svg>
+                    Fetching screenshot…
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="anchor-divider" id="anchor-divider-mobile"></div>
         </div>
 
@@ -2516,19 +2604,25 @@ async function startScan() {
 
     scanResult = await backendRes.json();
 
-    // Inject browser PSI results into scan payload if backend PSI failed
-    if (psiResult && scanResult.fallbackFlags?.pageSpeedFailed) {
+    // Always apply browser PSI result when available — it uses a 55s timeout
+    // vs the backend's 9.5s, so it's significantly more accurate.
+    // Override backend speed/mobileClarity scores whenever browser PSI succeeded.
+    if (psiResult) {
       scanResult._browserPsi = psiResult;
       const p = psiResult.performanceScore;
-      scanResult.categoryScores.speed.score         = p >= 90 ? 20 : p >= 75 ? 16 : p >= 50 ? 10 : p >= 30 ? 5 : 2;
-      scanResult.categoryScores.speed.reasons       = ['PageSpeed mobile score: ' + p + '/100' + (psiResult.lcp ? ' | LCP: ' + psiResult.lcp : '')];
+      // Speed: out of 20
+      scanResult.categoryScores.speed.score   = p >= 90 ? 20 : p >= 80 ? 18 : p >= 70 ? 15 : p >= 60 ? 12 : p >= 50 ? 9 : p >= 35 ? 6 : p >= 20 ? 3 : 1;
+      scanResult.categoryScores.speed.reasons = ['PageSpeed mobile score: ' + p + '/100' + (psiResult.lcp ? ' | LCP: ' + psiResult.lcp : '')];
+      // Mobile clarity: out of 20
       const fast = psiResult.mobileStrategy === 'FAST';
-      scanResult.categoryScores.mobileClarity.score = (fast && p >= 75) ? 19 : (fast && p >= 50) ? 15 : p >= 60 ? 12 : p >= 50 ? 10 : 4;
+      const avg  = psiResult.mobileStrategy === 'AVERAGE';
+      scanResult.categoryScores.mobileClarity.score   = fast ? (p >= 75 ? 19 : 15) : avg ? (p >= 60 ? 13 : 10) : (p >= 50 ? 8 : 4);
       scanResult.categoryScores.mobileClarity.reasons = [psiResult.mobileStrategy ? 'Mobile category: ' + psiResult.mobileStrategy : 'Mobile data from browser'];
+      // Recalculate total
       const cats = scanResult.categoryScores;
       scanResult.totalScore = Math.min(Object.values(cats).reduce((a, c) => a + c.score, 0), 100);
-      scanResult.fallbackFlags.pageSpeedFailed = false;
-      scanResult.scanMode = scanResult.fallbackFlags.screenshotFailed || scanResult.fallbackFlags.homepageFetchFailed ? 'partial_live' : 'live';
+      if (scanResult.fallbackFlags) scanResult.fallbackFlags.pageSpeedFailed = false;
+      scanResult.scanMode = (scanResult.fallbackFlags?.screenshotFailed || scanResult.fallbackFlags?.homepageFetchFailed) ? 'partial_live' : 'live';
     }
 
     // Ensure minimum perceived duration, then complete the animation
