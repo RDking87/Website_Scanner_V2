@@ -126,10 +126,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navy);paddi
 .trades-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:.5rem 2.5rem;flex-wrap:wrap;}
 .trades-label{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.75);}
 .trade-tag{display:flex;align-items:center;gap:.4rem;color:var(--white);font-weight:700;font-size:.88rem;}
-.trade-tag svg{width:16px;height:16px;opacity:.85;}
+.trade-tag svg{width:18px;height:18px;opacity:.9;}
 
 /* ══ SECTION SHARED ══════════════════════════════════════════════════════════ */
-.section{padding:5rem 2rem;}
+.section{padding:5.5rem 2rem;}
 .container{max-width:1000px;margin:0 auto;}
 .container-sm{max-width:760px;margin:0 auto;}
 .section-chip{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:.8rem;}
@@ -145,7 +145,7 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .scanner-section{background:var(--sc-navy);padding:5rem 2rem;position:relative;overflow:hidden;}
 .scanner-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(249,115,22,.08) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(249,115,22,.05) 0%,transparent 50%);pointer-events:none;z-index:0;}
 .scanner-inner{max-width:1060px;margin:0 auto;position:relative;z-index:1;}
-.scanner-intro{text-align:center;margin-bottom:3rem;}
+.scanner-intro{text-align:center;margin-bottom:2rem;}
 .scanner-intro .section-chip{color:var(--sc-orange);}
 .scanner-intro .section-chip::before{background:var(--sc-orange);}
 .scanner-intro h2{color:#fff;}
@@ -199,6 +199,9 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 /* Entry split */
 .sc-entry-split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:0 0 24px;}
 @media(max-width:760px){.sc-entry-split{grid-template-columns:1fr;gap:32px;padding:0 0 16px;}}
+/* Form-only variant — centers the form card */
+.sc-entry-form-only{grid-template-columns:1fr;max-width:560px;margin:0 auto;}
+.sc-entry-form-only > div:first-child{display:none;}
 .sc-entry-eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.14em;color:var(--sc-orange);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
 .sc-eyebrow-dot{width:6px;height:6px;background:var(--sc-green);border-radius:50%;display:inline-block;box-shadow:0 0 6px rgba(34,197,94,.6);animation:scPulse 2s ease-in-out infinite;}
 @keyframes scPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.7}}
@@ -296,7 +299,7 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .sc-score-poor .sc-score-circle-fill{stroke:#ef4444;} .sc-score-fair .sc-score-circle-fill{stroke:#f59e0b;} .sc-score-good .sc-score-circle-fill{stroke:#22c55e;}
 
 /* Missed + urgency */
-.sc-action-missed{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.22);border-radius:var(--sc-r);padding:11px 13px;margin-bottom:10px;display:flex;align-items:center;gap:11px;}
+.sc-action-missed{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.22);border-radius:var(--sc-r);padding:13px 14px;margin-bottom:14px;display:flex;align-items:center;gap:11px;}
 .sc-action-missed-icon{font-size:18px;flex-shrink:0;}
 .sc-action-missed-big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--sc-orange);line-height:1;text-shadow:0 0 14px rgba(249,115,22,.35);}
 .sc-action-missed-label{font-size:11px;color:var(--sc-w80);margin-top:2px;line-height:1.35;}
@@ -842,27 +845,20 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
   background:rgba(244,96,12,.1);border-color:var(--orange-light);
 }
 
-/* Secondary CTA */
+/* Secondary CTA — text link, no button chrome */
 .pc-btn-secondary{
   display:block;width:100%;text-align:center;
-  padding:.65rem 1rem;border-radius:3px;
-  font-weight:600;font-size:.83rem;
-  border:1.5px solid var(--rule);cursor:pointer;transition:all .2s;
+  padding:.4rem .5rem;
+  font-weight:500;font-size:.8rem;
+  border:none;cursor:pointer;transition:color .15s;
   background:transparent;color:var(--mid);
+  text-decoration:none;
 }
-.pc-btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
-.price-card.featured .pc-btn-secondary{
-  border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.45);
-}
-.price-card.featured .pc-btn-secondary:hover{
-  border-color:rgba(255,255,255,.35);color:rgba(255,255,255,.8);
-}
-.price-card.premium .pc-btn-secondary{
-  border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4);
-}
-.price-card.premium .pc-btn-secondary:hover{
-  border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.75);
-}
+.pc-btn-secondary:hover{color:var(--orange);}
+.price-card.featured .pc-btn-secondary{color:rgba(255,255,255,.35);}
+.price-card.featured .pc-btn-secondary:hover{color:rgba(255,255,255,.75);}
+.price-card.premium .pc-btn-secondary{color:rgba(255,255,255,.3);}
+.price-card.premium .pc-btn-secondary:hover{color:rgba(255,255,255,.65);}
 
 /* No-call microcopy under buttons */
 .pc-microcopy{
@@ -946,7 +942,7 @@ footer .logo{color:var(--white);}
 <!-- ══ MOBILE CONTACT BAR ═══════════════════════════════════════════════════ -->
 <div class="mobile-contact-bar" id="mobileContactBar">
   <a href="tel:01234567890" class="mcb-btn mcb-call">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg>
     Call
   </a>
   <a href="https://wa.me/441234567890" target="_blank" rel="noopener" class="mcb-btn mcb-wa">
@@ -964,7 +960,7 @@ footer .logo{color:var(--white);}
   <a href="/" class="logo">Converge<span>.</span></a>
   <div class="nav-right">
     <a href="tel:01234567890" class="nav-phone">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg>
       01234 567890
     </a>
     <a href="https://wa.me/441234567890" target="_blank" rel="noopener" class="nav-wa">
@@ -983,7 +979,7 @@ footer .logo{color:var(--white);}
   <div class="hero-actions">
     <a href="#scanner" class="btn-orange">Scan My Website Free →</a>
     <a href="tel:01234567890" class="btn-call">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg>
       Call Now
     </a>
     <a href="#how-it-works" class="btn-outline">How It Works</a>
@@ -1012,11 +1008,16 @@ footer .logo{color:var(--white);}
 <div class="trades-strip">
   <div class="trades-inner">
     <div class="trades-label">We work with:</div>
-    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Plumbers</div>
-    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-3 4 10-12h-7l3-4z"/></svg>Electricians</div>
-    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l7-7 7 7M5 9v9h4v-4h2v4h4V9"/></svg>Builders</div>
-    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h16M2 8c0-3 3-6 8-6s8 3 8 6M5 8v8h10V8"/></svg>Roofers</div>
-    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4l3 2"/></svg>Gas Engineers</div>
+    <!-- Plumbers: water drop -->
+    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2C10 2 4 8.5 4 12a6 6 0 0012 0c0-3.5-6-10-6-10z"/></svg>Plumbers</div>
+    <!-- Electricians: lightning bolt -->
+    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 7 11 10 11 7 18 13 9 10 9 13 2"/></svg>Electricians</div>
+    <!-- Builders: brick wall -->
+    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="16" height="4" rx=".5"/><rect x="2" y="10" width="16" height="4" rx=".5"/><line x1="2" y1="7" x2="18" y2="7"/><line x1="2" y1="14" x2="18" y2="14"/><line x1="7" y1="3" x2="7" y2="7"/><line x1="13" y1="10" x2="13" y2="14"/></svg>Builders</div>
+    <!-- Roofers: proper pitched roof outline -->
+    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 9 10 2 19 9"/><polyline points="4 9 4 18 16 18 16 9"/></svg>Roofers</div>
+    <!-- Gas Engineers: flame -->
+    <div class="trade-tag"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 18c-3.5 0-6-2.5-6-5.5 0-2 1-3.5 2.5-4.5-.5 1.5 0 3 1 3.5C7 9 8 6.5 10 4c0 2 1 3.5 2.5 4-.5-1 0-2.5.5-3C14.5 6.5 16 8.5 16 12.5c0 3-2.5 5.5-6 5.5z"/></svg>Gas Engineers</div>
   </div>
 </div>
 
@@ -1024,30 +1025,11 @@ footer .logo{color:var(--white);}
 <section class="scanner-section" id="scanner">
   <div class="scanner-inner">
 
-    <!-- Intro -->
+    <!-- Single intro -->
     <div class="scanner-intro reveal">
       <div class="section-chip">Free Website Scan</div>
-      <h2>See how many jobs your website <span class="em">could be losing</span></h2>
-      <p class="lead">We scan your site for speed, mobile clarity, trust signals and conversion blockers — then show you exactly what may be costing you enquiries.</p>
-    </div>
-
-    <!-- Multi-CTA group — cold/warm/hot paths -->
-    <div class="scanner-cta-group">
-      <p class="scanner-cta-microcopy">Already know you need help? Skip the scan.</p>
-      <div class="scanner-cta-row">
-        <button class="sc-mcta-primary" onclick="document.getElementById('inp-url').focus();document.getElementById('inp-url').scrollIntoView({behavior:'smooth',block:'center'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          Scan My Website
-        </button>
-        <button class="sc-mcta-secondary" onclick="scOpenBooking(null)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Book Free Review
-        </button>
-        <a href="tel:01234567890" class="sc-mcta-secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
-          Call Now
-        </a>
-      </div>
+      <h2>Scan your website <span class="em">in seconds</span></h2>
+      <p class="lead">See exactly what's costing you jobs — speed, mobile, trust signals, and conversion blockers.</p>
     </div>
 
     <!-- Scanner App -->
@@ -1055,17 +1037,8 @@ footer .logo{color:var(--white);}
 
       <!-- STATE 1: INPUT -->
       <section id="sc-state-input" class="sc-state active">
-        <div class="sc-entry-split">
-          <div>
-            <div class="sc-entry-eyebrow"><span class="sc-eyebrow-dot"></span>Free Website Scan</div>
-            <h2 class="sc-entry-headline">See How Many Jobs Your Website Could Be <em>Losing</em></h2>
-            <p class="sc-entry-body">We scan your site for speed, mobile clarity, trust signals and conversion blockers — then show you what may be costing you enquiries.</p>
-            <ul class="sc-entry-bullets">
-              <li class="sc-entry-bullet"><span class="sc-entry-bullet-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Takes under 30 seconds</li>
-              <li class="sc-entry-bullet"><span class="sc-entry-bullet-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Built for trades businesses</li>
-              <li class="sc-entry-bullet"><span class="sc-entry-bullet-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Free review available after your score</li>
-            </ul>
-          </div>
+        <div class="sc-entry-split sc-entry-form-only">
+          <div></div>
           <div>
             <div id="sc-form-error" class="sc-error-banner"></div>
             <div class="sc-scan-form" id="sc-scan-form">
@@ -1309,7 +1282,7 @@ footer .logo{color:var(--white);}
                 <div class="sc-results-bottom-btns">
                   <button onclick="scOpenBooking(null)" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px">Book My Free Review →</button>
                   <a href="tel:01234567890" class="sc-mcta-secondary" style="padding:13px 24px;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg>
                     Call Now
                   </a>
                 </div>
@@ -1364,7 +1337,7 @@ footer .logo{color:var(--white);}
     <div class="sc-booked-title">You're all booked —<br>speak soon!</div>
     <p class="sc-booked-sub">We'll walk you through exactly what's costing you jobs and how to fix it. Nothing to prepare — just bring your questions.</p>
     <div class="sc-booked-email-confirm">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg>
       Check your email for confirmation
     </div>
     <div class="sc-booked-btns">
@@ -1548,7 +1521,7 @@ footer .logo{color:var(--white);}
     </div>
     <div class="relatable-cta reveal">
       <p>You're good at your trade. Your website should be just as good at <span>getting you jobs.</span></p>
-      <button onclick="scOpenBooking(null)" class="btn-orange" style="cursor:pointer;">Book My Free Review →</button>
+      <a href="#scanner" class="btn-orange">Scan My Website Free →</a>
     </div>
   </div>
 </section>
@@ -1564,11 +1537,11 @@ footer .logo{color:var(--white);}
       <div class="prob-card"><div class="prob-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="prob-title">No reviews or trust signals</div><div class="prob-desc">People hire who they trust. Without reviews or photos of your work, they choose someone else.</div></div></div>
       <div class="prob-card"><div class="prob-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="prob-title">Loads too slowly</div><div class="prob-desc">If your site takes more than 3 seconds to load, half your visitors leave before seeing anything.</div></div></div>
       <div class="prob-card"><div class="prob-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div><div><div class="prob-title">Too much text, no direction</div><div class="prob-desc">Walls of text confuse people. They should know what you do and how to call you in under 10 seconds.</div></div></div>
-      <div class="prob-card"><div class="prob-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg></div><div><div class="prob-title">Nobody knows your area</div><div class="prob-desc">If people can't see where you work, they won't bother calling — they'll call someone who says it clearly.</div></div></div>
+      <div class="prob-card"><div class="prob-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.26.2 2.47.57 3.58.11.35.03.74-.24 1.02L6.6 10.8z"/></svg></div><div><div class="prob-title">Nobody knows your area</div><div class="prob-desc">If people can't see where you work, they won't bother calling — they'll call someone who says it clearly.</div></div></div>
     </div>
     <div class="prob-cta reveal">
-      <p><strong>Sound familiar?</strong> We can show you exactly which of these is affecting your site — in a free 15-min call.</p>
-      <button onclick="scOpenBooking(null)" class="btn-orange" style="cursor:pointer;">Book My Free Review</button>
+      <p><strong>Sound familiar?</strong> Scan your site free — we'll show you exactly what's costing you jobs.</p>
+      <a href="#scanner" class="btn-orange">Scan My Site Free →</a>
     </div>
   </div>
 </section>
@@ -1627,7 +1600,7 @@ footer .logo{color:var(--white);}
           <div class="vpt"><div class="vpt-num">2</div><div><div class="vpt-title">None of your competitors are doing it</div><div class="vpt-desc">In your local area, the trades website with video will stand out immediately from the crowd.</div></div></div>
           <div class="vpt"><div class="vpt-num">3</div><div><div class="vpt-title">You shoot it in 15 minutes</div><div class="vpt-desc">Phone camera, natural light. We handle all editing, AI enhancement and putting it on your site.</div></div></div>
         </div>
-        <button onclick="scOpenBooking(null)" class="btn-orange" style="cursor:pointer;">Book My Free Review →</button>
+        <button onclick="openBuyModal()" class="btn-orange" style="cursor:pointer;">Get Started Now →</button>
       </div>
     </div>
   </div>
@@ -1644,8 +1617,8 @@ footer .logo{color:var(--white);}
       <div class="hiw-step"><div class="hiw-num">3</div><div class="hiw-title">You get more jobs</div><p class="hiw-desc">Your new site goes live. Enquiries start coming in. We stay available to tweak and improve as needed.</p><span class="hiw-time">From day one</span></div>
     </div>
     <div class="hiw-bottom reveal">
-      <p>Want to see this working for <strong>your</strong> website?</p>
-      <button onclick="scOpenBooking(null)" class="btn-orange" style="cursor:pointer;">Book My Free Review — No Obligation</button>
+      <p>Ready to get more calls from your website?</p>
+      <button onclick="openBuyModal()" class="btn-orange" style="cursor:pointer;">Get Started Now →</button>
     </div>
   </div>
 </section>
@@ -1753,20 +1726,16 @@ footer .logo{color:var(--white);}
 
 <section class="final-cta">
   <div class="section-chip" style="color:var(--orange);display:flex;justify-content:center;margin-bottom:1rem;">Ready?</div>
-  <h2 class="light" style="margin-bottom:.75rem;">Three ways to <span class="em">get started</span></h2>
-  <p style="font-size:.9rem;color:rgba(255,255,255,.35);margin-bottom:2rem;max-width:360px;position:relative;">Choose how you'd like to move forward:</p>
+  <h2 class="light" style="margin-bottom:.75rem;">More jobs. <span class="em">Starting this week.</span></h2>
+  <p style="font-size:1rem;color:rgba(255,255,255,.5);margin:0 auto 2.2rem;max-width:400px;line-height:1.6;position:relative;">Choose how you'd like to move forward:</p>
   <div class="final-actions">
     <button onclick="openBuyModal()" class="btn-orange" style="font-size:1.05rem;padding:1.1rem 2.5rem;cursor:pointer;">Get Started Now →</button>
     <button onclick="scOpenBooking(null)" class="btn-call" style="font-size:1rem;padding:1rem 2rem;cursor:pointer;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Book Free Review
     </button>
-    <a href="tel:01234567890" class="btn-call" style="font-size:1rem;padding:1rem 2rem;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
-      Call Now
-    </a>
   </div>
-  <p style="margin-top:1.5rem;color:rgba(255,255,255,.25);font-size:.78rem;">No obligation. No hard sell. First draft delivered in 48–72 hours.</p>
+  <p style="margin-top:1.5rem;color:rgba(255,255,255,.22);font-size:.78rem;">No obligation. First draft in 48–72 hours.</p>
 </section>
 
 <footer>
