@@ -392,10 +392,29 @@ body::before{
 }
 
 /* Post-unlock panel state */
-.action-post-unlock{display:none}
-.action-post-unlock.visible{display:block}
+.action-post-unlock{
+  display:none;
+  opacity:0;
+  transition:opacity .5s ease;
+}
+.action-post-unlock.visible{
+  display:block;
+  opacity:1;
+}
 .action-pre-unlock{display:block}
 .action-pre-unlock.hidden{display:none}
+
+/* Action divider — hidden until unlock */
+#action-divider-desktop{
+  display:none;
+  border:none;
+  border-top:1px solid var(--navy-border);
+  margin:14px 0;
+}
+#action-divider-desktop.visible{display:block}
+
+/* Mobile anchor divider — hidden until unlock */
+#anchor-divider-mobile{display:none}
 
 /* ── LEFT PANEL — evidence column ──────────────────────────────────────── */
 
@@ -1954,11 +1973,7 @@ body::before{
               </div>
             </div>
           </div>
-          <div class="anchor-divider"></div>
-          <div class="action-pre-unlock" id="action-pre-unlock-mobile">
-            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
-            <div class="action-support">No obligation. Free to request.</div>
-          </div>
+          <div class="anchor-divider" id="anchor-divider-mobile"></div>
           <div class="action-post-unlock" id="action-post-unlock-mobile">
             <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
             <div class="action-support">No obligation. No hard sell.</div>
@@ -2030,20 +2045,10 @@ body::before{
             </div>
           </div>
 
-          <hr class="action-divider">
+          <hr class="action-divider" id="action-divider-desktop">
 
-          <!-- PRE-UNLOCK CTA -->
-          <div class="action-pre-unlock" id="action-pre-unlock">
-            <div class="action-unlock-headline">See Exactly What's Costing You Jobs</div>
-            <div class="action-unlock-body">Your full breakdown, exact issues and fastest fixes are waiting.</div>
-            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
-            <div class="action-support">No obligation. Free to request.</div>
-          </div>
-
-          <!-- POST-UNLOCK: book CTA -->
+          <!-- POST-UNLOCK ONLY: book CTA (fades in after unlock) -->
           <div class="action-post-unlock" id="action-post-unlock">
-            <div class="action-unlock-headline">Want Us To Walk You Through It?</div>
-            <div class="action-unlock-body">Book a free 10-minute review — biggest wins specific to your trade and area.</div>
             <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
             <div class="action-support">No obligation. No hard sell.</div>
           </div>
@@ -2441,18 +2446,18 @@ function renderResults(data) {
     const locked = document.getElementById('findings-locked');
     const strip  = document.getElementById('unlock-strip');
     const full   = document.getElementById('findings-full');
-    const pre    = document.getElementById('action-pre-unlock');
     const post   = document.getElementById('action-post-unlock');
-    const preM   = document.getElementById('action-pre-unlock-mobile');
     const postM  = document.getElementById('action-post-unlock-mobile');
+    const divD   = document.getElementById('action-divider-desktop');
+    const divM   = document.getElementById('anchor-divider-mobile');
     if (blurOverlay) blurOverlay.classList.remove('hidden');
     if (locked)      locked.style.display = '';
     if (strip)       strip.classList.remove('visible');
     if (full)        full.classList.remove('revealed');
-    if (pre)         pre.classList.remove('hidden');
-    if (post)        post.classList.remove('visible');
-    if (preM)        preM.classList.remove('hidden');
-    if (postM)       postM.classList.remove('visible');
+    if (post)        { post.style.display = 'none'; post.style.opacity = '0'; }
+    if (postM)       { postM.style.display = 'none'; postM.style.opacity = '0'; }
+    if (divD)        divD.classList.remove('visible');
+    if (divM)        divM.style.display = 'none';
   }
 
   // Support both new shape (totalScore/categoryScores) and old shape (score.total)
@@ -2690,17 +2695,29 @@ function unlockDetails() {
   if (strip) strip.classList.add('visible');
   if (full)  full.classList.add('revealed');
 
-  // Desktop right panel: swap pre/post unlock
-  const pre  = document.getElementById('action-pre-unlock');
+  // Show desktop divider then fade in book CTA
+  const dividerD = document.getElementById('action-divider-desktop');
   const post = document.getElementById('action-post-unlock');
-  if (pre)  pre.classList.add('hidden');
-  if (post) post.classList.add('visible');
+  if (dividerD) dividerD.classList.add('visible');
+  if (post) {
+    post.style.display = 'block';
+    post.style.opacity = '0';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { post.style.opacity = '1'; });
+    });
+  }
 
-  // Mobile anchor card: swap CTAs
-  const preM  = document.getElementById('action-pre-unlock-mobile');
+  // Mobile: show divider + fade in book CTA
+  const dividerM = document.getElementById('anchor-divider-mobile');
   const postM = document.getElementById('action-post-unlock-mobile');
-  if (preM)  { preM.classList.add('hidden'); }
-  if (postM) { postM.classList.add('visible'); }
+  if (dividerM) dividerM.style.display = 'block';
+  if (postM) {
+    postM.style.display = 'block';
+    postM.style.opacity = '0';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { postM.style.opacity = '1'; });
+    });
+  }
 
   // Scroll to findings
   setTimeout(() => {
