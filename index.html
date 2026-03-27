@@ -406,6 +406,31 @@ body::before{
 }
 .action-btn-book:active{transform:scale(0.98);box-shadow:none}
 
+/* ── BOOKED STATE ─────────────────────────────────────────────────────────── */
+.action-btn-book.booked{
+  background:#166534;
+  color:rgba(255,255,255,0.92);
+  box-shadow:0 0 0 1px rgba(34,197,94,0.3), 0 2px 10px rgba(34,197,94,0.15);
+  cursor:default;
+  animation:none;
+  pointer-events:none;
+  transform:none;
+}
+.action-btn-book.booked:hover{
+  background:#166534;
+  transform:none;
+  box-shadow:0 0 0 1px rgba(34,197,94,0.3), 0 2px 10px rgba(34,197,94,0.15);
+}
+.book-confirm-msg{
+  font-size:11px;
+  color:rgba(34,197,94,0.8);
+  text-align:center;
+  margin-top:8px;
+  opacity:0;
+  animation:fadeInUp .5s ease .1s forwards;
+  letter-spacing:0.02em;
+}
+
 .action-btn-secondary{
   width:100%;
   background:transparent;
@@ -3082,6 +3107,45 @@ function escapeHtml(str) {
 /* ─── ENTER KEY on URL input ─────────────────────────────────────────────── */
 document.getElementById('inp-url').addEventListener('keydown', e => {
   if (e.key === 'Enter') startScan();
+});
+
+/* ─── CALENDLY BOOKING CONFIRMATION ─────────────────────────────────────── */
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.event !== 'calendly.event_scheduled') return;
+
+  // Close the fallback iframe modal if open
+  closeCalModal();
+
+  // Mark all book buttons as booked
+  document.querySelectorAll('.action-btn-book').forEach(btn => {
+    btn.classList.add('booked');
+    btn.textContent = '✓ You\'re all booked — speak soon!';
+    btn.removeAttribute('onclick');
+    btn.removeAttribute('href');
+  });
+
+  // Also mark success-book-btn if on success screen
+  const successBtn = document.querySelector('.success-book-btn');
+  if (successBtn) {
+    successBtn.classList.add('booked');
+    successBtn.textContent = '✓ You\'re all booked — speak soon!';
+    successBtn.removeAttribute('onclick');
+    successBtn.removeAttribute('href');
+  }
+
+  // Add confirmation microcopy below each book button
+  document.querySelectorAll('.action-post-unlock, .mobile-book-cta').forEach(container => {
+    // Remove existing support text
+    const existing = container.querySelector('.action-support');
+    if (existing) existing.style.display = 'none';
+    // Add confirmation message if not already added
+    if (!container.querySelector('.book-confirm-msg')) {
+      const msg = document.createElement('div');
+      msg.className = 'book-confirm-msg';
+      msg.textContent = 'Check your email for confirmation';
+      container.appendChild(msg);
+    }
+  });
 });
 </script>
 
