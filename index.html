@@ -150,10 +150,10 @@ body::before{
 
 /* ─── RESULTS LAYOUT ─────────────────────────────────────────────────────── */
 
-/* Desktop: true split grid */
+/* Desktop: LEFT = anchor summary, RIGHT = findings */
 .results-split{
   display:grid;
-  grid-template-columns:1fr 360px;
+  grid-template-columns:360px 1fr;
   gap:28px;
   align-items:start;
   padding-top:36px;
@@ -161,21 +161,21 @@ body::before{
   margin:0 auto;
 }
 
-/* Left = evidence column */
+/* Left = sticky anchor/summary card */
 .results-left{
   display:block;
   order:1;
-}
-
-/* Right = sticky action column */
-.results-right{
-  order:2;
   position:sticky;
   top:24px;
+}
+
+/* Right = findings column (scrolls) */
+.results-right{
+  order:2;
   display:block;
 }
 
-/* Mobile: stack, action first */
+/* Mobile: stack, summary first, findings second */
 @media(max-width:860px){
   .results-split{
     grid-template-columns:1fr;
@@ -183,21 +183,33 @@ body::before{
     padding-top:24px;
   }
   .results-left{
-    order:2;
-    margin-top:20px;
-  }
-  .results-right{
     order:1;
     position:static;
+    margin-bottom:20px;
+  }
+  .results-right{
+    order:2;
   }
 }
 
-/* ── RIGHT PANEL — action card ─────────────────────────────────────────── */
+/* ── LEFT PANEL — action/summary card ──────────────────────────────────── */
+
+/* Desktop: action panel is the full left card */
 .action-panel{
   background:var(--navy-card);
   border:1px solid var(--navy-border);
   border-radius:var(--radius-lg);
   padding:22px;
+}
+
+/* On mobile: hide desktop action panel, show anchor card */
+@media(max-width:860px){
+  .action-panel{ display:none }
+  .result-anchor-card{ display:block }
+}
+@media(min-width:861px){
+  .result-anchor-card{ display:none }
+  .action-panel{ display:block }
 }
 
 /* Score + headline inside action panel */
@@ -521,108 +533,84 @@ body::before{
 }
 .findings-unlock-strip.visible{display:flex}
 
-/* Anchor card + divider — mobile-only summary block */
+/* Anchor card default */
 .result-anchor-card{display:none}
-.anchor-divider{display:none}
-
-/* On mobile show anchor card, hide left panel preview */
-@media(max-width:860px){
-  .result-anchor-card{
-    display:block;
-    background:var(--navy-card);
-    border:1px solid var(--navy-border);
-    border-radius:var(--radius-lg);
-    padding:20px;
-    margin-bottom:16px;
-  }
-  .anchor-score-row{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-bottom:14px;
-  }
-  .anchor-score-circle{
-    width:72px;height:72px;
-    position:relative;flex-shrink:0;
-  }
-  .anchor-score-circle svg{transform:rotate(-90deg)}
-  .anchor-score-text{flex:1}
-  .anchor-headline{
-    font-family:var(--font-display);
-    font-weight:900;
-    font-size:clamp(16px,5vw,20px);
-    line-height:1.1;
-    margin-bottom:3px;
-  }
-  .anchor-sub{font-size:12px;color:var(--white-50);line-height:1.4}
-  .anchor-body{display:flex;gap:14px;align-items:flex-start}
-  .anchor-body-info{flex:1;min-width:0}
-  .anchor-preview-mobile{
-    flex-shrink:0;
-    width:130px;
-    border-radius:var(--radius);
-    overflow:hidden;
-    border:1px solid var(--navy-border);
-  }
-  .anchor-preview-header-m{
-    background:var(--navy-mid);
-    padding:5px 8px;
-    display:flex;
-    align-items:center;
-    gap:5px;
-    border-bottom:1px solid var(--navy-border);
-  }
-  .anchor-dots-m{display:flex;gap:4px}
-  .anchor-dot-m{width:6px;height:6px;border-radius:50%}
-  .anchor-missed{
-    background:rgba(249,115,22,0.08);
-    border:1px solid rgba(249,115,22,0.2);
-    border-radius:var(--radius);
-    padding:9px 12px;
-    margin-bottom:8px;
-    display:flex;
-    align-items:center;
-    gap:9px;
-  }
-  .anchor-missed-icon{font-size:18px;flex-shrink:0}
-  .anchor-missed-big{
-    font-family:var(--font-display);
-    font-weight:900;
-    font-size:16px;
-    color:var(--orange);
-    line-height:1;
-  }
-  .anchor-missed-label{font-size:10px;color:var(--white-80);margin-top:1px}
-  .anchor-urgency{
-    font-size:12px;color:#fca5a5;
-    background:rgba(239,68,68,0.06);
-    border:1px solid rgba(239,68,68,0.14);
-    border-radius:var(--radius);
-    padding:7px 11px;line-height:1.4;display:none;
-  }
-  .anchor-urgency.visible{display:block}
-  .anchor-fallback{display:none}
-  .anchor-fallback.visible{display:block}
-  .anchor-divider{
-    display:block;
-    border:none;height:1px;
-    background:linear-gradient(to right, transparent, var(--navy-border) 20%, var(--navy-border) 80%, transparent);
-    margin:16px 0;
-  }
-  /* On mobile, hide the desktop action panel (right col) score row, missed etc — shown in anchor card instead */
-  .action-score-row{display:none!important}
-  .action-missed{display:none!important}
-  .action-urgency{display:none!important}
-  .action-fallback{display:none!important}
-  /* Hide desktop preview in left col on mobile */
-  .preview-panel{display:none}
-  /* Tighten action panel on mobile */
-  .action-panel{
-    background:transparent;
-    border:none;
-    padding:0;
-  }
+.anchor-divider{
+  border:none;height:1px;
+  background:linear-gradient(to right, transparent, var(--navy-border) 20%, var(--navy-border) 80%, transparent);
+  margin:16px 0;
+  display:none;
 }
+
+/* Anchor card mobile styles */
+.anchor-score-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:14px;
+}
+.anchor-score-circle{
+  width:72px;height:72px;
+  position:relative;flex-shrink:0;
+}
+.anchor-score-circle svg{transform:rotate(-90deg)}
+.anchor-score-text{flex:1}
+.anchor-headline{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(16px,5vw,20px);
+  line-height:1.1;
+  margin-bottom:3px;
+}
+.anchor-sub{font-size:12px;color:var(--white-50);line-height:1.4}
+.anchor-body{display:flex;gap:14px;align-items:flex-start}
+.anchor-body-info{flex:1;min-width:0}
+.anchor-preview-mobile{
+  flex-shrink:0;
+  width:130px;
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid var(--navy-border);
+}
+.anchor-preview-header-m{
+  background:var(--navy-mid);
+  padding:5px 8px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  border-bottom:1px solid var(--navy-border);
+}
+.anchor-dots-m{display:flex;gap:4px}
+.anchor-dot-m{width:6px;height:6px;border-radius:50%}
+.anchor-missed{
+  background:rgba(249,115,22,0.08);
+  border:1px solid rgba(249,115,22,0.2);
+  border-radius:var(--radius);
+  padding:9px 12px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.anchor-missed-icon{font-size:18px;flex-shrink:0}
+.anchor-missed-big{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:16px;
+  color:var(--orange);
+  line-height:1;
+}
+.anchor-missed-label{font-size:10px;color:var(--white-80);margin-top:1px}
+.anchor-urgency{
+  font-size:12px;color:#fca5a5;
+  background:rgba(239,68,68,0.06);
+  border:1px solid rgba(239,68,68,0.14);
+  border-radius:var(--radius);
+  padding:7px 11px;line-height:1.4;display:none;
+}
+.anchor-urgency.visible{display:block}
+.anchor-fallback{display:none}
+.anchor-fallback.visible{display:block}
 
 /* Screenshot image */
 .screenshot-img{
@@ -647,14 +635,14 @@ body::before{
   font-size:13px;
 }
 
-/* Anchor card score/data IDs — hidden on desktop (JS reads from action panel) */
-@media(min-width:861px){
-  .result-anchor-card{display:none}
-  .anchor-divider{display:none}
+/* preview-panel inside action card has no extra bottom margin */
+.action-panel .preview-panel{
+  box-shadow:none;
+  margin-bottom:0;
 }
 
-/* Findings panel (right side, below score) */
-.findings-panel{padding:0;margin-top:16px}
+/* Findings panel (right column) */
+.findings-panel{padding:0;margin-top:0}
 .findings-section-title{
   font-family:var(--font-display);
   font-weight:700;
@@ -1911,35 +1899,161 @@ body::before{
   <section id="state-results" class="state">
     <div class="results-split">
 
-      <!-- ══ LEFT COLUMN — evidence (desktop) ═══════════════════════════ -->
+      <!-- ══ LEFT COLUMN — anchored summary card (sticky on desktop) ════ -->
       <div class="results-left">
 
-        <!-- Website preview card -->
-        <div class="preview-panel">
-          <div class="preview-panel-header">
-            <div class="preview-browser-dots">
-              <div class="preview-browser-dot" style="background:#ef4444"></div>
-              <div class="preview-browser-dot" style="background:#f59e0b"></div>
-              <div class="preview-browser-dot" style="background:#22c55e"></div>
-            </div>
-            <div class="preview-url-bar" id="screenshot-url-bar">—</div>
-          </div>
-          <div class="preview-img-wrap">
-            <div id="screenshot-slot">
-              <div class="screenshot-placeholder">
-                <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-                  <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                  <circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                  <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                </svg>
-                Fetching screenshot…
+        <!-- Mobile anchor card (shown on mobile, hidden on desktop) -->
+        <div class="result-anchor-card">
+          <div class="anchor-score-row">
+            <div class="anchor-score-circle">
+              <svg viewBox="0 0 100 100" width="72" height="72">
+                <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
+                <circle class="score-circle-fill" id="score-ring-mobile" cx="50" cy="50" r="42"
+                  stroke-dasharray="264" stroke-dashoffset="264"/>
+              </svg>
+              <div class="score-circle-text">
+                <span class="score-number" id="score-number-mobile">0</span>
+                <span class="score-denom">/100</span>
               </div>
             </div>
-            <div class="preview-img-overlay">
-              <span class="preview-img-label">Homepage snapshot</span>
+            <div class="anchor-score-text">
+              <div class="eyebrow" id="results-eyebrow-mobile" style="font-size:11px;margin-bottom:2px"></div>
+              <div class="anchor-headline" id="results-headline-mobile"></div>
+              <div class="anchor-sub" id="results-sub-mobile"></div>
             </div>
           </div>
+          <div class="anchor-body">
+            <div class="anchor-body-info">
+              <div class="anchor-missed" id="missed-card-mobile" style="display:none">
+                <div class="anchor-missed-icon">📉</div>
+                <div>
+                  <div class="anchor-missed-big" id="missed-number-mobile">—</div>
+                  <div class="anchor-missed-label" id="missed-label-mobile">of potential enquiries may not be converting</div>
+                </div>
+              </div>
+              <div class="anchor-urgency" id="urgency-callout-mobile"><span id="urgency-text-mobile"></span></div>
+              <div class="anchor-fallback" id="fallback-notice-mobile"><span id="fallback-text-mobile"></span></div>
+            </div>
+            <div class="anchor-preview-mobile">
+              <div class="anchor-preview-header-m">
+                <div class="anchor-dots-m">
+                  <div class="anchor-dot-m" style="background:#ef4444"></div>
+                  <div class="anchor-dot-m" style="background:#f59e0b"></div>
+                  <div class="anchor-dot-m" style="background:#22c55e"></div>
+                </div>
+              </div>
+              <div class="preview-img-wrap">
+                <div id="screenshot-slot-mobile">
+                  <div class="screenshot-placeholder" style="aspect-ratio:3/4;min-height:110px;font-size:11px">
+                    <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+                      <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                      <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="anchor-divider"></div>
+          <div class="action-pre-unlock" id="action-pre-unlock-mobile">
+            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
+            <div class="action-support">No obligation. Free to request.</div>
+          </div>
+          <div class="action-post-unlock" id="action-post-unlock-mobile">
+            <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
+            <div class="action-support">No obligation. No hard sell.</div>
+          </div>
         </div>
+
+        <!-- Desktop action panel (score + summary + CTA — sticky) -->
+        <div class="action-panel">
+
+          <!-- Score + headline -->
+          <div class="action-score-row">
+            <div class="action-score-circle">
+              <svg viewBox="0 0 100 100" width="80" height="80">
+                <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
+                <circle class="score-circle-fill" id="score-ring" cx="50" cy="50" r="42"
+                  stroke-dasharray="264" stroke-dashoffset="264"/>
+              </svg>
+              <div class="score-circle-text">
+                <span class="score-number" id="score-number-el">0</span>
+                <span class="score-denom">/100</span>
+              </div>
+            </div>
+            <div class="action-score-text-block">
+              <div class="eyebrow" id="results-eyebrow" style="font-size:11px;margin-bottom:3px"></div>
+              <div class="action-headline" id="results-headline"></div>
+              <div class="action-sub" id="results-sub"></div>
+            </div>
+          </div>
+
+          <!-- Missed enquiries -->
+          <div class="action-missed" id="missed-card" style="display:none">
+            <div class="action-missed-icon">📉</div>
+            <div>
+              <div class="action-missed-big" id="missed-number">—</div>
+              <div class="action-missed-label" id="missed-label">of potential enquiries may not be converting</div>
+            </div>
+          </div>
+
+          <!-- Urgency -->
+          <div class="action-urgency" id="urgency-callout"><span id="urgency-text"></span></div>
+
+          <!-- Fallback -->
+          <div class="action-fallback" id="fallback-notice"><span id="fallback-text"></span></div>
+
+          <!-- Website preview inside left card -->
+          <div class="preview-panel" style="margin-top:16px">
+            <div class="preview-panel-header">
+              <div class="preview-browser-dots">
+                <div class="preview-browser-dot" style="background:#ef4444"></div>
+                <div class="preview-browser-dot" style="background:#f59e0b"></div>
+                <div class="preview-browser-dot" style="background:#22c55e"></div>
+              </div>
+              <div class="preview-url-bar" id="screenshot-url-bar">—</div>
+            </div>
+            <div class="preview-img-wrap">
+              <div id="screenshot-slot">
+                <div class="screenshot-placeholder">
+                  <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+                    <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                    <circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                    <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                  </svg>
+                  Fetching screenshot…
+                </div>
+              </div>
+              <div class="preview-img-overlay">
+                <span class="preview-img-label">Homepage snapshot</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="action-divider">
+
+          <!-- PRE-UNLOCK CTA -->
+          <div class="action-pre-unlock" id="action-pre-unlock">
+            <div class="action-unlock-headline">See Exactly What's Costing You Jobs</div>
+            <div class="action-unlock-body">Your full breakdown, exact issues and fastest fixes are waiting.</div>
+            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
+            <div class="action-support">No obligation. Free to request.</div>
+          </div>
+
+          <!-- POST-UNLOCK: book CTA -->
+          <div class="action-post-unlock" id="action-post-unlock">
+            <div class="action-unlock-headline">Want Us To Walk You Through It?</div>
+            <div class="action-unlock-body">Book a free 10-minute review — biggest wins specific to your trade and area.</div>
+            <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
+            <div class="action-support">No obligation. No hard sell.</div>
+          </div>
+
+        </div><!-- /.action-panel -->
+
+      </div><!-- /.results-left -->
+
+      <!-- ══ RIGHT COLUMN — findings / analysis ════════════════════════ -->
+      <div class="results-right">
 
         <!-- Findings panel: teaser + blur + full -->
         <div class="findings-panel">
@@ -1999,134 +2113,6 @@ body::before{
           </div>
 
         </div><!-- /.findings-panel -->
-
-      </div><!-- /.results-left -->
-
-      <!-- ══ RIGHT COLUMN — action / summary (sticky on desktop) ════════ -->
-      <div class="results-right">
-
-        <!-- Mobile-only: anchor summary card shown above findings on mobile -->
-        <div class="result-anchor-card">
-          <div class="anchor-score-row">
-            <div class="anchor-score-circle">
-              <svg viewBox="0 0 100 100" width="72" height="72">
-                <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
-                <circle class="score-circle-fill" id="score-ring-mobile" cx="50" cy="50" r="42"
-                  stroke-dasharray="264" stroke-dashoffset="264"/>
-              </svg>
-              <div class="score-circle-text">
-                <span class="score-number" id="score-number-mobile">0</span>
-                <span class="score-denom">/100</span>
-              </div>
-            </div>
-            <div class="anchor-score-text">
-              <div class="eyebrow" id="results-eyebrow-mobile" style="font-size:11px;margin-bottom:2px"></div>
-              <div class="anchor-headline" id="results-headline-mobile"></div>
-              <div class="anchor-sub" id="results-sub-mobile"></div>
-            </div>
-          </div>
-          <div class="anchor-body">
-            <div class="anchor-body-info">
-              <div class="anchor-missed" id="missed-card-mobile" style="display:none">
-                <div class="anchor-missed-icon">📉</div>
-                <div>
-                  <div class="anchor-missed-big" id="missed-number-mobile">—</div>
-                  <div class="anchor-missed-label" id="missed-label-mobile">of potential enquiries may not be converting</div>
-                </div>
-              </div>
-              <div class="anchor-urgency" id="urgency-callout-mobile"><span id="urgency-text-mobile"></span></div>
-              <div class="anchor-fallback" id="fallback-notice-mobile"><span id="fallback-text-mobile"></span></div>
-            </div>
-            <div class="anchor-preview-mobile">
-              <div class="anchor-preview-header-m">
-                <div class="anchor-dots-m">
-                  <div class="anchor-dot-m" style="background:#ef4444"></div>
-                  <div class="anchor-dot-m" style="background:#f59e0b"></div>
-                  <div class="anchor-dot-m" style="background:#22c55e"></div>
-                </div>
-              </div>
-              <div class="preview-img-wrap">
-                <div id="screenshot-slot-mobile">
-                  <div class="screenshot-placeholder" style="aspect-ratio:3/4;min-height:110px;font-size:11px">
-                    <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
-                      <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                      <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="anchor-divider"></div>
-          <!-- Mobile CTA pre-unlock -->
-          <div class="action-pre-unlock" id="action-pre-unlock-mobile">
-            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
-            <div class="action-support">No obligation. Free to request.</div>
-          </div>
-          <!-- Mobile CTA post-unlock -->
-          <div class="action-post-unlock" id="action-post-unlock-mobile">
-            <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
-            <div class="action-support">No obligation. No hard sell.</div>
-          </div>
-        </div>
-
-        <!-- Desktop: action panel (sticky) -->
-        <div class="action-panel">
-
-          <!-- Score + headline (desktop only) -->
-          <div class="action-score-row">
-            <div class="action-score-circle">
-              <svg viewBox="0 0 100 100" width="80" height="80">
-                <circle class="score-circle-bg" cx="50" cy="50" r="42"/>
-                <circle class="score-circle-fill" id="score-ring" cx="50" cy="50" r="42"
-                  stroke-dasharray="264" stroke-dashoffset="264"/>
-              </svg>
-              <div class="score-circle-text">
-                <span class="score-number" id="score-number-el">0</span>
-                <span class="score-denom">/100</span>
-              </div>
-            </div>
-            <div class="action-score-text-block">
-              <div class="eyebrow" id="results-eyebrow" style="font-size:11px;margin-bottom:3px"></div>
-              <div class="action-headline" id="results-headline"></div>
-              <div class="action-sub" id="results-sub"></div>
-            </div>
-          </div>
-
-          <!-- Missed enquiries -->
-          <div class="action-missed" id="missed-card" style="display:none">
-            <div class="action-missed-icon">📉</div>
-            <div>
-              <div class="action-missed-big" id="missed-number">—</div>
-              <div class="action-missed-label" id="missed-label">of potential enquiries may not be converting</div>
-            </div>
-          </div>
-
-          <!-- Urgency -->
-          <div class="action-urgency" id="urgency-callout"><span id="urgency-text"></span></div>
-
-          <!-- Fallback -->
-          <div class="action-fallback" id="fallback-notice"><span id="fallback-text"></span></div>
-
-          <hr class="action-divider">
-
-          <!-- PRE-UNLOCK CTA -->
-          <div class="action-pre-unlock" id="action-pre-unlock">
-            <div class="action-unlock-headline">See Exactly What's Costing You Jobs</div>
-            <div class="action-unlock-body">Your full breakdown, exact issues and fastest fixes are waiting.</div>
-            <button class="action-btn-primary" onclick="openModal()">Get My Full Breakdown →</button>
-            <div class="action-support">No obligation. Free to request.</div>
-          </div>
-
-          <!-- POST-UNLOCK: book CTA -->
-          <div class="action-post-unlock" id="action-post-unlock">
-            <div class="action-unlock-headline">Want Us To Walk You Through It?</div>
-            <div class="action-unlock-body">Book a free 10-minute review — biggest wins specific to your trade and area.</div>
-            <a class="action-btn-book" href="#" onclick="openBooking(event)">Book My Free Review →</a>
-            <div class="action-support">No obligation. No hard sell.</div>
-          </div>
-
-        </div><!-- /.action-panel -->
 
       </div><!-- /.results-right -->
 
