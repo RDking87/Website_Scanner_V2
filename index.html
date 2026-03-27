@@ -188,27 +188,55 @@ body::before{
   border:1px solid var(--navy-border);
   border-radius:var(--radius-lg);
   overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
 }
 .preview-panel-header{
   background:var(--navy-mid);
-  padding:9px 14px;
+  padding:10px 14px;
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:9px;
   border-bottom:1px solid var(--navy-border);
 }
-.preview-browser-dots{display:flex;gap:5px}
-.preview-browser-dot{width:9px;height:9px;border-radius:50%}
+.preview-browser-dots{display:flex;gap:6px;align-items:center}
+.preview-browser-dot{width:10px;height:10px;border-radius:50%}
 .preview-url-bar{
   flex:1;
   background:var(--navy-light);
-  border-radius:4px;
-  padding:4px 10px;
+  border-radius:5px;
+  padding:5px 11px;
   font-size:10px;
   color:var(--white-50);
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+  border:1px solid var(--navy-border);
+}
+
+/* Screenshot image wrap — relative so overlay can sit on top */
+.preview-img-wrap{
+  position:relative;
+  overflow:hidden;
+}
+
+/* Bottom gradient overlay with label */
+.preview-img-overlay{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:56px;
+  background:linear-gradient(to bottom, transparent, rgba(7,13,26,0.75) 100%);
+  display:flex;
+  align-items:flex-end;
+  padding:0 14px 11px;
+  pointer-events:none;
+}
+.preview-img-label{
+  font-size:10px;
+  letter-spacing:0.07em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.45);
+  font-family:var(--font-body);
+  font-weight:500;
 }
 
 /* Action panel card (right side) */
@@ -335,21 +363,27 @@ body::before{
   font-weight:700;
   font-size:16px;
   letter-spacing:0.02em;
-  padding:14px 20px;
+  padding:15px 20px;
   cursor:pointer;
   text-transform:uppercase;
   display:block;
   text-align:center;
   text-decoration:none;
   margin-bottom:8px;
-  animation:bookPulse 3.5s ease-in-out infinite;
-  transition:background .2s,transform .1s;
+  box-shadow:0 2px 12px rgba(249,115,22,0.25), 0 1px 3px rgba(0,0,0,0.3);
+  animation:bookPulse 4s ease-in-out infinite;
+  transition:background .2s,transform .1s,box-shadow .2s;
 }
-.action-btn-book:hover{background:var(--orange-dark);animation:none}
-.action-btn-book:active{transform:scale(0.98)}
+.action-btn-book:hover{
+  background:var(--orange-dark);
+  animation:none;
+  box-shadow:0 4px 20px rgba(249,115,22,0.35), 0 2px 6px rgba(0,0,0,0.3);
+  transform:translateY(-1px);
+}
+.action-btn-book:active{transform:scale(0.98);box-shadow:none}
 @keyframes bookPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,0)}
-  50%{box-shadow:0 0 0 6px rgba(249,115,22,0.15)}
+  0%,100%{box-shadow:0 2px 12px rgba(249,115,22,0.25), 0 1px 3px rgba(0,0,0,0.3)}
+  50%{box-shadow:0 4px 22px rgba(249,115,22,0.38), 0 2px 8px rgba(0,0,0,0.25)}
 }
 
 .action-btn-secondary{
@@ -882,14 +916,15 @@ body::before{
 .screenshot-img{
   width:100%;
   display:block;
-  aspect-ratio:3/4;
+  aspect-ratio:1/1;
   object-fit:cover;
   object-position:top;
   background:var(--navy-mid);
 }
 .screenshot-placeholder{
   width:100%;
-  aspect-ratio:16/9;
+  aspect-ratio:1/1;
+  min-height:280px;
   background:var(--navy-mid);
   display:flex;
   flex-direction:column;
@@ -1656,14 +1691,19 @@ body::before{
             </div>
             <div class="preview-url-bar" id="screenshot-url-bar">—</div>
           </div>
-          <div id="screenshot-slot">
-            <div class="screenshot-placeholder" style="aspect-ratio:3/4;min-height:320px">
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-                <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
-              </svg>
-              Fetching screenshot…
+          <div class="preview-img-wrap">
+            <div id="screenshot-slot">
+              <div class="screenshot-placeholder">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+                  <rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                  <circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                  <path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/>
+                </svg>
+                Fetching screenshot…
+              </div>
+            </div>
+            <div class="preview-img-overlay">
+              <span class="preview-img-label">Homepage snapshot</span>
             </div>
           </div>
         </div>
