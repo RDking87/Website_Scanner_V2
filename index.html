@@ -303,7 +303,7 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .sc-action-missed-icon{font-size:18px;flex-shrink:0;}
 .sc-action-missed-big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--sc-orange);line-height:1;text-shadow:0 0 14px rgba(249,115,22,.35);}
 .sc-action-missed-label{font-size:11px;color:var(--sc-w80);margin-top:2px;line-height:1.35;}
-.sc-action-urgency{font-size:11px;color:rgba(252,165,165,.85);background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:var(--sc-r);padding:7px 11px;margin-bottom:10px;line-height:1.4;display:none;}
+.sc-action-urgency{font-size:12px;color:rgba(252,165,165,.8);padding:4px 0 10px;line-height:1.5;display:none;}
 .sc-action-urgency.visible{display:block;}
 .sc-action-fallback{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:var(--sc-r);padding:7px 12px;font-size:11px;color:rgba(245,158,11,.85);margin-bottom:10px;display:none;}
 .sc-action-fallback.visible{display:block;}
@@ -415,31 +415,56 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .sc-results-bottom-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 @media(max-width:500px){.sc-results-bottom-btns{flex-direction:column;align-items:center;}.sc-results-bottom-btns a,.sc-results-bottom-btns button{width:100%;max-width:300px;justify-content:center;}}
 
-/* Top weaknesses panel (dynamic lowest-3 categories) */
-.sc-weaknesses{margin-bottom:4px;}
+/* Top weaknesses panel */
+.sc-weaknesses{margin-bottom:0;}
 .sc-weakness-label{
-  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--sc-orange);
-  margin-bottom:14px;display:flex;align-items:center;gap:8px;
-}
-.sc-weakness-label::after{content:'';flex:1;height:1px;background:var(--sc-navy-border);}
-.sc-weakness-row{
-  display:flex;flex-direction:column;gap:5px;
-  padding:14px 0;border-bottom:1px solid var(--sc-navy-border);
-}
-.sc-weakness-row:last-child{border-bottom:none;padding-bottom:0;}
-.sc-weakness-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.sc-weakness-cat{font-size:13px;font-weight:700;color:#fff;}
-.sc-weakness-score{
   font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;
-  padding:2px 8px;border-radius:4px;white-space:nowrap;
+  letter-spacing:.08em;text-transform:uppercase;color:#fff;
+  margin-bottom:20px;padding-bottom:10px;
+  border-bottom:2px solid var(--sc-orange);display:inline-block;
 }
-.sc-weakness-score.low{background:rgba(239,68,68,.12);color:#ef4444;}
-.sc-weakness-score.mid{background:rgba(245,158,11,.1);color:#f59e0b;}
-.sc-weakness-score.opt{background:rgba(34,197,94,.08);color:#22c55e;}
-.sc-weakness-issue{font-size:13px;color:var(--sc-w80);line-height:1.5;}
-.sc-weakness-fix{font-size:12px;color:var(--sc-orange);line-height:1.45;margin-top:2px;}
-.sc-weakness-fix::before{content:'→ ';}
+.sc-weakness-row{
+  display:flex;flex-direction:column;gap:6px;
+  padding:18px 0;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sc-weakness-row:last-child{border-bottom:none;padding-bottom:4px;}
+.sc-weakness-header{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.sc-weakness-cat{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:16px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.03em;
+}
+.sc-weakness-score{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;
+  color:var(--sc-w50);
+}
+.sc-weakness-score.low{color:#ef4444;}
+.sc-weakness-score.mid{color:#f59e0b;}
+.sc-weakness-score.opt{color:#22c55e;}
+.sc-weakness-issue{font-size:14px;color:rgba(255,255,255,.75);line-height:1.55;}
+.sc-weakness-fix{
+  font-size:13px;color:var(--sc-orange);line-height:1.45;
+  padding-left:12px;border-left:2px solid rgba(249,115,22,.35);
+  margin-top:2px;
+}
+
+/* Collapsible breakdown */
+.sc-breakdown-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;background:none;border:none;
+  padding:12px 0;cursor:pointer;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;
+  color:var(--sc-w50);text-align:left;
+  border-top:1px solid var(--sc-navy-border);
+  margin-top:20px;transition:color .15s;
+}
+.sc-breakdown-toggle:hover{color:var(--sc-w80);}
+.sc-breakdown-toggle-icon{width:16px;height:16px;flex-shrink:0;transition:transform .25s;}
+.sc-breakdown-collapsible{overflow:hidden;max-height:0;opacity:0;transition:max-height .4s ease,opacity .3s ease;}
+.sc-breakdown-collapsible.open{max-height:600px;opacity:1;}
+.sc-breakdown-toggle.open .sc-breakdown-toggle-icon{transform:rotate(180deg);}
+
+/* Issues / fixes — kept for JS compat but hidden from UI */
+.sc-issues-list,.sc-fixes-list{display:none;}
 
 /* Lead modal */
 .sc-modal-overlay{position:fixed;inset:0;background:rgba(5,10,20,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s;}
@@ -1297,11 +1322,18 @@ footer .logo{color:var(--white);}
               <div id="sc-top-weaknesses" style="display:none;margin-bottom:20px;"></div>
 
               <div class="sc-findings-full" id="sc-findings-full">
-                <div class="sc-findings-section-title">Full Score Breakdown</div>
-                <div class="sc-breakdown-bars" id="sc-breakdown-bars"></div>
-                <div id="sc-issues-title" style="display:none"><div class="sc-findings-section-title" style="margin-top:16px">What's Costing You Work</div></div>
+                <!-- Collapsible full score breakdown -->
+                <button class="sc-breakdown-toggle" id="sc-breakdown-toggle" onclick="scToggleBreakdown(this)" type="button">
+                  View full score breakdown
+                  <svg class="sc-breakdown-toggle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+                </button>
+                <div class="sc-breakdown-collapsible" id="sc-breakdown-collapsible">
+                  <div class="sc-breakdown-bars" id="sc-breakdown-bars" style="margin-top:12px;"></div>
+                </div>
+                <!-- Hidden: kept for JS compat -->
+                <div id="sc-issues-title" style="display:none"></div>
                 <ul class="sc-issues-list" id="sc-issues-list"></ul>
-                <div id="sc-fixes-title" style="display:none"><div class="sc-findings-section-title" style="margin-top:16px">Fastest Fixes</div></div>
+                <div id="sc-fixes-title" style="display:none"></div>
                 <ul class="sc-fixes-list" id="sc-fixes-list"></ul>
               </div>
 
@@ -1315,7 +1347,7 @@ footer .logo{color:var(--white);}
               <!-- Bottom CTA bar (full results) -->
               <div class="sc-results-bottom-cta" id="sc-results-bottom-cta" style="display:none">
                 <h3>Ready to fix this and win more jobs?</h3>
-                <p>We'll improve your site's clarity, trust, and conversion performance — fast.</p>
+                <p>Most sites we review have these exact issues. Fixing them typically improves enquiries within weeks.</p>
                 <div class="sc-results-bottom-btns">
                   <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
                   <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Book Free Review</button>
@@ -1940,46 +1972,44 @@ async function scStartScan() {
   }
 }
 
-/* ── CATEGORY COPY MAP (deterministic issue/fix per category + score tier) ── */
+/* ── CATEGORY COPY MAP ────────────────────────────────────────────────────── */
 const SC_CATEGORY_COPY_MAP = {
   speed: {
-    low:  { issue: "Your site loads slowly on mobile — visitors typically leave within 3 seconds if nothing appears.", fix: "Compress images, remove render-blocking scripts, and enable caching to cut load time significantly." },
-    mid:  { issue: "Page load time is below average for mobile users, which is costing you some visitors before they see your offer.", fix: "Optimise the largest images and defer non-critical scripts to improve perceived speed." },
-    opt:  { issue: "Load time is decent but there's room to push it further, particularly on slower mobile connections.", fix: "Fine-tune image compression and review third-party scripts to squeeze out the remaining delay." }
+    low:  { issue: "Your site loads too slowly — visitors are leaving before they see anything. This is directly costing you enquiries.", fix: "Compress images, remove render-blocking scripts, and enable caching. A 1–2 second load time is achievable." },
+    mid:  { issue: "Load time is below average for mobile users. Some visitors are dropping off before your content appears.", fix: "Optimise your largest images and defer non-critical scripts to improve how fast the page feels." },
+    opt:  { issue: "Speed is reasonable, but there's room to reduce load time further — especially on slower connections.", fix: "Audit third-party scripts and fine-tune image compression to push load time closer to 1 second." }
   },
   mobileClarity: {
-    low:  { issue: "The site is difficult to use on a phone — text is too small, buttons are cramped, and key info is hard to find.", fix: "Redesign the mobile layout with large tap targets, readable font sizes, and a visible call button above the fold." },
-    mid:  { issue: "Mobile experience works but lacks clarity — the contact action isn't immediately obvious on smaller screens.", fix: "Surface your phone number or contact button prominently within the first scroll on mobile." },
-    opt:  { issue: "Mobile layout is functional, but small friction points may reduce the click-to-call conversion rate.", fix: "Review button sizing and above-the-fold content to make the next action completely obvious." }
+    low:  { issue: "Your site is difficult to use on a phone. Buttons are hard to tap, text is too small, and the contact action isn't obvious.", fix: "Redesign for mobile-first. Increase tap target sizes, bump font sizes, and put your phone number above the fold." },
+    mid:  { issue: "Mobile experience works, but the path to contact isn't immediately clear on smaller screens.", fix: "Move your primary CTA higher on mobile and increase button size so it's easy to tap on the first scroll." },
+    opt:  { issue: "Mobile layout is functional, but small friction points may be reducing your click-to-call rate.", fix: "Review what appears above the fold on a phone and ensure the most important action is always visible." }
   },
   ctaStrength: {
-    low:  { issue: "There's no clear call to action visible when visitors arrive — they don't know what to do or how to contact you.", fix: "Add a prominent phone number and a single clear CTA button at the top of every page." },
-    mid:  { issue: "CTAs exist but compete with each other or lack urgency — visitors may leave without taking action.", fix: "Reduce to one primary CTA per section and make the desired action visually dominant." },
-    opt:  { issue: "CTAs are present and reasonably clear, but the copy could be stronger to drive immediate action.", fix: "Test more direct action-oriented language and add a subtle reason to act now." }
+    low:  { issue: "There's no clear call to action visible when someone lands on your site. Visitors don't know what to do next.", fix: "Add a single prominent CTA at the top of every page — your phone number and a 'Get a Quote' or 'Call Us' button." },
+    mid:  { issue: "CTAs are present but competing with each other or lacking urgency. Some visitors leave without acting.", fix: "Reduce to one primary CTA per section and make the desired action visually dominant on the page." },
+    opt:  { issue: "Your CTAs are in place, but the copy could be sharper to prompt more immediate action.", fix: "Test stronger, more direct button labels — 'Call Now' outperforms 'Contact Us' for most trades businesses." }
   },
   trustSignals: {
-    low:  { issue: "The site has almost no trust signals — no reviews, no accreditations, and no social proof visible to new visitors.", fix: "Add Google reviews, a trade accreditation logo, and one or two before/after photos to build immediate credibility." },
-    mid:  { issue: "Some trust signals are present but they're easy to miss — visitors may not feel confident enough to call.", fix: "Make reviews more prominent, add a star rating near the top, and show recent job examples." },
-    opt:  { issue: "Trust signals are in place but could be strengthened to close the gap with higher-converting competitors.", fix: "Add a short testimonial quote near your main CTA and ensure your accreditation badges are clearly visible." }
+    low:  { issue: "The site has almost no trust signals. New visitors have no reason to believe you're reliable before they call.", fix: "Add visible Google review stars, a trade accreditation badge, and at least one before/after photo above the fold." },
+    mid:  { issue: "Some trust signals exist but they're easy to miss. Visitors may hesitate before contacting you.", fix: "Make your reviews more prominent — move them higher on the page and display your star rating near the headline." },
+    opt:  { issue: "Trust signals are present, but could be reinforced to close the confidence gap with stronger competitors.", fix: "Add a short customer quote near your main CTA and ensure your accreditation badges are clearly visible." }
   },
   localRelevance: {
-    low:  { issue: "It's not clear from the site which areas you serve — local visitors can't tell if you'll come to them.", fix: "Add your service area clearly in the headline, footer, and a dedicated 'Areas We Cover' section." },
-    mid:  { issue: "Service area is mentioned but not prominent — visitors from target locations may still be unsure you cover them.", fix: "Include town names in your page title, H1, and near your contact section." },
-    opt:  { issue: "Local relevance is reasonable, but more specific location signals would improve trust with nearby searchers.", fix: "Strengthen area references throughout the page and consider a short 'Based in X, covering Y and Z' line near the top." }
+    low:  { issue: "It's not clear from this site where you work. Local visitors can't tell if you'll come to them, so they call someone else.", fix: "State your service area in the headline, footer, and a dedicated section. Include the town names people search for." },
+    mid:  { issue: "Your service area is mentioned but not prominent. Visitors from target locations may still be unsure.", fix: "Include your main town names in the page title, H1, and near the contact section for local search visibility." },
+    opt:  { issue: "Local relevance is decent, but stronger area signals would improve trust with nearby searchers.", fix: "Add a 'Based in X, covering Y and Z' line near the top and reference specific postcodes or districts." }
   }
 };
 
-/* Return 'low' | 'mid' | 'opt' bucket for a /20 score */
 function scWeaknessTier(val) { return val <= 8 ? 'low' : val <= 14 ? 'mid' : 'opt'; }
 
-/* Render lowest-3 categories into #sc-top-weaknesses */
 function scRenderTopWeaknesses(scores) {
   const el = document.getElementById('sc-top-weaknesses');
   if (!el) return;
 
-  // Sort categories by score ascending, pick bottom 3
-  const catKeys = ['speed','mobileClarity','ctaStrength','trustSignals','localRelevance'];
+  const catKeys   = ['speed','mobileClarity','ctaStrength','trustSignals','localRelevance'];
   const catLabels = { speed:'Speed', mobileClarity:'Mobile Clarity', ctaStrength:'CTA Strength', trustSignals:'Trust Signals', localRelevance:'Local Relevance' };
+
   const sorted = catKeys
     .map(k => ({ key: k, label: catLabels[k], val: scores[k] || 0 }))
     .sort((a, b) => a.val - b.val)
@@ -1988,9 +2018,9 @@ function scRenderTopWeaknesses(scores) {
   const scoreClass = v => v <= 8 ? 'low' : v <= 14 ? 'mid' : 'opt';
 
   const rows = sorted.map(({ key, label, val }) => {
-    const tier  = scWeaknessTier(val);
-    const copy  = SC_CATEGORY_COPY_MAP[key]?.[tier] || { issue: 'Needs attention.', fix: 'Review and improve.' };
-    const sc    = scoreClass(val);
+    const tier = scWeaknessTier(val);
+    const copy = SC_CATEGORY_COPY_MAP[key]?.[tier] || { issue: 'Needs attention.', fix: 'Review and improve.' };
+    const sc   = scoreClass(val);
     return `<div class="sc-weakness-row">
       <div class="sc-weakness-header">
         <span class="sc-weakness-cat">${label}</span>
@@ -2006,6 +2036,15 @@ function scRenderTopWeaknesses(scores) {
     ${rows}
   </div>`;
   el.style.display = 'block';
+}
+
+/* Toggle collapsible breakdown */
+function scToggleBreakdown(btn) {
+  const panel = document.getElementById('sc-breakdown-collapsible');
+  if (!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  btn.childNodes[0].textContent = isOpen ? 'Hide score breakdown ' : 'View full score breakdown ';
 }
 
 /* ── RENDER RESULTS ──────────────────────────────────────────────────────── */
