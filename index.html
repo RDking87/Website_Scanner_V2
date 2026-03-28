@@ -499,6 +499,41 @@ body.sc-results-active .mobile-contact-bar{
 .sc-results-bottom-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 @media(max-width:500px){.sc-results-bottom-btns{flex-direction:column;align-items:center;}.sc-results-bottom-btns a,.sc-results-bottom-btns button{width:100%;max-width:300px;justify-content:center;}}
 
+/* Commercial impact block — score-driven diagnostic consequence */
+.sc-impact-block{
+  margin-top:24px;margin-bottom:4px;
+  padding:18px 20px;
+  background:rgba(11,21,37,.6);
+  border:1px solid var(--sc-navy-border);
+  border-left:3px solid var(--sc-amber);
+  border-radius:var(--sc-r);
+}
+.sc-impact-label{
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sc-amber);font-weight:600;margin-bottom:8px;font-family:'Inter',system-ui,sans-serif;
+}
+.sc-impact-text{font-size:14px;color:rgba(255,255,255,.75);line-height:1.6;}
+.sc-impact-sub{font-size:12px;color:var(--sc-w50);margin-top:6px;line-height:1.5;}
+
+/* Plan hooks on pricing cards */
+.pc-orient{
+  font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--orange);margin-bottom:.55rem;font-family:'Inter',system-ui,sans-serif;
+}
+.price-card.featured .pc-orient{color:rgba(244,96,12,.85);}
+.price-card.premium .pc-orient{color:rgba(244,96,12,.7);}
+
+/* Modal score context strip */
+.buy-modal-score-ctx{
+  display:none;
+  background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);
+  border-radius:var(--sc-r);padding:8px 12px;
+  font-size:12px;color:rgba(255,255,255,.6);
+  margin-bottom:16px;line-height:1.4;
+}
+.buy-modal-score-ctx.visible{display:block;}
+.buy-modal-score-ctx strong{color:rgba(255,255,255,.85);}
+
 /* Top weaknesses panel */
 .sc-weaknesses{margin-bottom:0;}
 .sc-weakness-label{
@@ -1342,13 +1377,20 @@ footer .logo{}
             <!-- C. TOP 3 WEAKNESSES (post-unlock) -->
             <div class="sc-findings-section" id="sc-top-weaknesses" style="display:none;"></div>
 
+            <!-- D. COMMERCIAL IMPACT BLOCK (post-unlock, score-driven) -->
+            <div class="sc-impact-block" id="sc-impact-block" style="display:none">
+              <div class="sc-impact-label">What this means for your business</div>
+              <div class="sc-impact-text" id="sc-impact-text"></div>
+              <div class="sc-impact-sub" id="sc-impact-sub"></div>
+            </div>
+
             <!-- E. FINAL CTA (post-unlock, single instance) -->
             <div class="sc-results-bottom-cta" id="sc-results-bottom-cta" style="display:none">
               <h3>Ready to fix this and win more jobs?</h3>
-              <p>Most sites we review have these exact issues. Fixing them typically improves enquiries within weeks.</p>
+              <p>Your site has specific issues holding it back. Choosing the right package puts them right — fast.</p>
               <div class="sc-results-bottom-btns">
-                <button onclick="scrollToPricing()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
-                <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Book Free Review</button>
+                <button onclick="scrollToPricing()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Choose Your Package →</button>
+                <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Ask a Question First</button>
               </div>
               <div style="margin-top:12px;font-size:11px;color:var(--sc-w50)">No hard sell. Fast turnaround. Built for trades.</div>
             </div>
@@ -1442,6 +1484,7 @@ footer .logo{}
     <!-- ── Form view ── -->
     <div class="buy-form-wrap" id="buy-form-wrap">
       <div class="buy-modal-eyebrow"><span class="buy-modal-eyebrow-dot"></span>No Call Required</div>
+      <div class="buy-modal-score-ctx" id="buy-modal-score-ctx"></div>
       <div class="buy-modal-title" id="buy-modal-title">Start Your Website Rebuild</div>
       <div class="buy-modal-subtitle">Tell us a little about your site and we'll get your slot secured.</div>
 
@@ -1729,6 +1772,7 @@ footer .logo{}
       <div class="price-card" id="price-card-rebuild">
         <div class="pc-badge-wrap"></div>
         <div class="pc-header">
+          <div class="pc-orient">Fix the fundamentals</div>
           <div class="pc-name">Website Rebuild</div>
           <div class="pc-price">£1,500</div>
           <div class="pc-note">One-off investment · £150 to secure your slot</div>
@@ -1754,7 +1798,7 @@ footer .logo{}
           <span class="pc-badge">⭐ Most Popular</span>
         </div>
         <div class="pc-header">
-          <div class="pc-start-label">✦ Fastest way to get started</div>
+          <div class="pc-orient">Turn visitors into enquiries</div>
           <div class="pc-name">Website + Conversion System</div>
           <div class="pc-price">£3,000</div>
           <div class="pc-note">One-off investment · £300 to secure your slot</div>
@@ -1780,6 +1824,7 @@ footer .logo{}
           <span class="pc-badge premium-badge">⚡ Custom &amp; Selective</span>
         </div>
         <div class="pc-header">
+          <div class="pc-orient">Full system + automation</div>
           <div class="pc-name">Growth System ⚡</div>
           <div class="pc-price" style="font-size:2.2rem">From £5,000</div>
           <div class="pc-note">Custom build · tailored to your business</div>
@@ -2097,6 +2142,9 @@ function scRenderResults(data) {
     g(els.mb)?.classList.remove('visible');
     g(els.dd)?.classList.remove('visible');
     if (g(els.dm)) g(els.dm).style.display = 'none';
+    /* Reset impact block and final CTA */
+    const ib=document.getElementById('sc-impact-block');if(ib)ib.style.display='none';
+    const bc=document.getElementById('sc-results-bottom-cta');if(bc)bc.style.display='none';
   }
 
   const score = data.totalScore ?? data.score?.total ?? 0;
@@ -2217,11 +2265,45 @@ function scUnlockDetails() {
   // Show weaknesses below the breakdown
   const wp=document.getElementById('sc-top-weaknesses');if(wp){wp.style.display='block';wp.style.paddingTop='24px';}
 
+  // Render commercial impact block
+  scRenderImpactBlock();
+
   // Show final CTA
   const bc=document.getElementById('sc-results-bottom-cta');if(bc)bc.style.display='block';
 
   // Scroll to unlock strip (score bars are immediately below it)
   setTimeout(()=>{ document.getElementById('sc-unlock-strip')?.scrollIntoView({behavior:'smooth',block:'start'}); },350);
+}
+
+/* ── COMMERCIAL IMPACT BLOCK ─────────────────────────────────────────────── */
+function scRenderImpactBlock() {
+  const block = document.getElementById('sc-impact-block');
+  const textEl = document.getElementById('sc-impact-text');
+  const subEl  = document.getElementById('sc-impact-sub');
+  if (!block || !textEl) return;
+
+  const score = scanResult?.totalScore ?? null;
+  if (score === null) return;
+
+  /* Score-tiered messaging — grounded, no fake numbers */
+  let text, sub;
+  if (score < 40) {
+    text = 'Based on these results, your site is likely turning away a significant share of visitors before they make contact. Slow load times, unclear calls-to-action, and weak trust signals are among the most common reasons trade websites lose enquiries every week.';
+    sub  = 'Fixing the issues identified above could meaningfully improve how many visits turn into calls or quote requests.';
+  } else if (score < 60) {
+    text = 'Your site has a working foundation, but several conversion issues are making it harder for visitors to take action. Most visitors who don\'t find a clear next step within seconds will leave without contacting you.';
+    sub  = 'Addressing the issues above is likely to improve how consistently your site generates enquiries.';
+  } else if (score < 80) {
+    text = 'Your site is performing reasonably, but there are specific areas that are reducing the number of visitors who go on to call or request a quote. Small improvements to clarity and trust can have a noticeable impact.';
+    sub  = 'The issues identified are worth addressing — they\'re the kind of friction that accumulates quietly across every visit.';
+  } else {
+    text = 'Your site is performing well compared to most trade websites. There are still areas that could be optimised to convert more of your existing traffic into enquiries — particularly around trust signals and CTA placement.';
+    sub  = 'Even a well-performing site benefits from targeted conversion improvements.';
+  }
+
+  textEl.textContent = text;
+  subEl.textContent  = sub;
+  block.style.display = 'block';
 }
 
 /* ── SUBMIT LEAD ─────────────────────────────────────────────────────────── */
@@ -2385,6 +2467,21 @@ function openBuyModal(pkg) {
     titleEl.textContent = `Start Your ${pkgData.label}`;
   }
 
+  /* Inject score context strip if a scan has been run */
+  const ctxEl = document.getElementById('buy-modal-score-ctx');
+  if (ctxEl) {
+    const score = scanResult?.totalScore ?? null;
+    if (score !== null && pkgData) {
+      ctxEl.innerHTML = `You selected: <strong>${pkgData.label}</strong> &nbsp;·&nbsp; Scan score: <strong>${score}/100</strong>`;
+      ctxEl.classList.add('visible');
+    } else if (pkgData) {
+      ctxEl.innerHTML = `You selected: <strong>${pkgData.label}</strong>`;
+      ctxEl.classList.add('visible');
+    } else {
+      ctxEl.classList.remove('visible');
+    }
+  }
+
   /* Pre-fill URL from scanner if available */
   const urlVal = (document.getElementById('inp-url')?.value || '').trim()
               || scanResult?.websiteUrl || '';
@@ -2452,14 +2549,15 @@ function applyPricingRecommendation(key) {
 
   card.classList.add('scan-recommended');
 
-  /* Inject "Recommended for you" badge into the badge-wrap */
+  /* Inject recommendation badge — include score if available */
   const wrap = card.querySelector('.pc-badge-wrap');
   if (wrap) {
-    /* Keep existing badge (Most Popular etc), prepend the rec badge */
+    const score = scanResult?.totalScore ?? null;
     const rec = document.createElement('span');
     rec.className = 'pc-badge rec-badge';
-    rec.innerHTML = '✦ Recommended for you';
-    /* If there's already a badge, add some spacing */
+    rec.innerHTML = score !== null
+      ? `✦ Recommended for your score: ${score}/100`
+      : '✦ Recommended for you';
     if (wrap.firstChild) {
       rec.style.marginRight = '6px';
       wrap.insertBefore(rec, wrap.firstChild);
