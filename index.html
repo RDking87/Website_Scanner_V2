@@ -343,7 +343,8 @@ body.sc-results-active .mobile-contact-bar{
 .sc-preview-url-bar{flex:1;background:var(--sc-navy-light);border-radius:4px;padding:4px 10px;font-size:10px;color:var(--sc-w50);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--sc-navy-border);}
 /* Screenshot: natural proportions, no cropping, no empty space */
 .sc-preview-img-wrap{position:relative;overflow:hidden;background:var(--sc-navy-mid);}
-.sc-screenshot-img{width:100%;height:auto;display:block;object-fit:contain;}
+.sc-screenshot-img{width:100%;height:auto;display:block;object-fit:contain;transition:transform .35s ease;}
+.sc-preview-img-wrap:hover .sc-screenshot-img{transform:scale(1.018);}
 .sc-screenshot-placeholder{width:100%;height:100%;min-height:140px;background:var(--sc-navy-mid);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--sc-w50);font-size:13px;}
 .sc-preview-img-overlay{position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(to bottom,transparent,rgba(7,13,26,.6));display:flex;align-items:flex-end;padding:0 12px 8px;pointer-events:none;z-index:1;}
 .sc-preview-img-label{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.38);font-weight:500;}
@@ -2088,8 +2089,8 @@ function scRenderResults(data) {
 
   /* teaser-issue and teaser-fix elements removed from DOM — no-op */
   const issuesData = data.issues||[];
-  const tf=document.getElementById('sc-teaser-fix'),tfw=document.getElementById('sc-teaser-fix-wrap');
-  if(fixesData.length&&tf){tfw.style.display='block';tf.innerHTML=`<li class="sc-fix-item"><span class="sc-fix-num">1</span><span>${scEscHtml(fixesData[0])}</span></li>`;}
+  const fixesData=data.priorityFixes||data.fixes||[];
+  /* Write to hidden compat lists (kept for JS compat, not displayed) */
   const il=document.getElementById('sc-issues-list'),it=document.getElementById('sc-issues-title');
   if(issuesData.length&&il){if(it)it.style.display='block';il.innerHTML=issuesData.map(x=>`<li class="sc-issue-item"><span class="sc-issue-icon">⚠</span><span>${scEscHtml(x)}</span></li>`).join('');}
   const fl=document.getElementById('sc-fixes-list'),ft=document.getElementById('sc-fixes-title');
