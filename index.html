@@ -252,44 +252,60 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .sc-scan-waiting-msg{font-size:13px;color:var(--sc-w50);margin-top:14px;text-align:center;}
 @keyframes scFadeInUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* Results layout */
-.sc-results-split{display:grid;grid-template-columns:360px 1fr;gap:28px;align-items:start;padding-top:36px;}
-.sc-results-left{order:1;position:sticky;top:80px;}
-.sc-results-right{order:2;}
-/* Results blur overlay (post-booking) */
-.sc-results-split.booked-blur .sc-results-right{filter:blur(3px);opacity:.4;pointer-events:none;transition:all .4s;}
-.sc-results-split.booked-blur .sc-results-left{opacity:.5;transition:opacity .4s;}
-@media(max-width:860px){
-  .sc-results-split{display:block;padding-top:20px;}
-  .sc-results-left{position:static;width:100%;margin-bottom:24px;}
-  .sc-results-right{width:100%;}
+/* Results layout — single column centred flow */
+.sc-results-flow{
+  max-width:800px;
+  margin:0 auto;
+  padding-top:32px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+/* Keep id-based blur for booked state */
+#sc-results-split.booked-blur .sc-findings-panel{
+  filter:blur(3px);opacity:.4;pointer-events:none;transition:all .4s;
+}
+#sc-results-split.booked-blur .sc-summary-card{
+  opacity:.5;transition:opacity .4s;
 }
 
-/* Desktop action panel */
-.sc-action-panel{background:var(--sc-navy-card);border:1px solid var(--sc-navy-border);border-radius:var(--sc-rlg);padding:22px;}
-/* Mobile anchor card */
-.sc-result-anchor-card{display:none;background:var(--sc-navy-card);border:1px solid var(--sc-navy-border);border-radius:var(--sc-rlg);padding:20px;width:100%;}
-@media(max-width:860px){
-  .sc-action-panel{display:none !important;}
-  .sc-result-anchor-card{display:block !important;}
+/* Summary card */
+.sc-summary-card{
+  background:var(--sc-navy-card);
+  border:1px solid var(--sc-navy-border);
+  border-radius:var(--sc-rlg);
+  padding:24px;
 }
-@media(min-width:861px){
-  .sc-result-anchor-card{display:none !important;}
-  .sc-action-panel{display:block !important;}
+.sc-summary-score-row{
+  display:flex;align-items:center;gap:16px;margin-bottom:16px;
 }
-.sc-mobile-book-cta{display:none;}
-@media(max-width:860px){
-  .sc-mobile-book-cta{display:none;margin-top:28px;padding-top:24px;border-top:1px solid var(--sc-navy-border);}
-  .sc-mobile-book-cta.visible{display:block;}
+.sc-summary-circle{
+  width:88px;height:88px;position:relative;flex-shrink:0;
+}
+.sc-summary-circle svg{transform:rotate(-90deg);}
+.sc-summary-text{flex:1;}
+
+/* Unified findings panel */
+.sc-findings-panel{padding:0;}
+
+/* Hide mobile sticky bar when scanner results are active */
+body.sc-results-active .mobile-contact-bar{
+  display:none !important;
 }
 
-/* Score circle */
-.sc-action-score-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;background:transparent;border:none;border-radius:0;padding:0;}
-.sc-action-score-circle{width:80px;height:80px;position:relative;flex-shrink:0;}
-.sc-action-score-circle svg{transform:rotate(-90deg);}
-.sc-action-score-text-block{flex:1;}
-.sc-action-headline{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(16px,2.5vw,20px);line-height:1.05;margin-bottom:3px;color:#fff;}
-.sc-action-sub{font-size:11px;color:rgba(255,255,255,.4);line-height:1.4;}
+@media(max-width:600px){
+  .sc-results-flow{padding-top:16px;}
+  .sc-summary-card{padding:18px;}
+  .sc-summary-score-row{gap:12px;}
+  .sc-summary-circle{width:72px;height:72px;}
+}
+/* Score text inside summary card */
+.sc-action-headline{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(17px,3vw,22px);line-height:1.05;margin-bottom:4px;color:#fff;}
+.sc-action-sub{font-size:12px;color:rgba(255,255,255,.4);line-height:1.45;}
+/* Post-unlock bottom CTA (single column) */
+.sc-mobile-book-cta{display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--sc-navy-border);}
+.sc-mobile-book-cta.visible{display:block;}
+
 .sc-score-circle-bg{stroke:var(--sc-navy-border);fill:none;stroke-width:7;}
 .sc-score-circle-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px rgba(249,115,22,.35));}
 .sc-score-circle-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -1160,204 +1176,161 @@ footer .logo{color:var(--white);}
 
       <!-- STATE 3: RESULTS -->
       <section id="sc-state-results" class="sc-state">
-        <div class="sc-results-split" id="sc-results-split">
+        <div class="sc-results-flow" id="sc-results-split">
 
-          <!-- LEFT: sticky summary -->
-          <div class="sc-results-left">
-
-            <!-- Mobile anchor card -->
-            <div class="sc-result-anchor-card">
-              <div class="sc-anchor-score-row">
-                <div class="sc-anchor-score-circle">
-                  <svg viewBox="0 0 100 100" width="74" height="74">
-                    <circle class="sc-score-circle-bg" cx="50" cy="50" r="42"/>
-                    <circle class="sc-score-circle-fill" id="sc-score-ring-mobile" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/>
-                  </svg>
-                  <div class="sc-score-circle-text">
-                    <span class="sc-score-number" id="sc-score-number-mobile">0</span>
-                    <span class="sc-score-denom">/100</span>
-                  </div>
-                </div>
-                <div class="sc-anchor-score-text">
-                  <div id="sc-results-eyebrow-mobile" style="font-size:11px;margin-bottom:2px;color:var(--sc-w50)"></div>
-                  <div class="sc-anchor-headline" id="sc-results-headline-mobile"></div>
-                  <div class="sc-anchor-sub" id="sc-results-sub-mobile"></div>
+          <!-- A. SUMMARY CARD -->
+          <div class="sc-summary-card">
+            <div class="sc-summary-score-row">
+              <div class="sc-summary-circle">
+                <svg viewBox="0 0 100 100" width="88" height="88">
+                  <circle class="sc-score-circle-bg" cx="50" cy="50" r="42"/>
+                  <circle class="sc-score-circle-fill" id="sc-score-ring" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/>
+                </svg>
+                <div class="sc-score-circle-text">
+                  <span class="sc-score-number" id="sc-score-number-el">0</span>
+                  <span class="sc-score-denom">/100</span>
                 </div>
               </div>
-              <div class="sc-anchor-body">
-                <div class="sc-anchor-body-info">
-                  <div class="sc-anchor-missed" id="sc-missed-card-mobile" style="display:none">
-                    <div class="sc-anchor-missed-icon">📉</div>
-                    <div>
-                      <div class="sc-anchor-missed-big" id="sc-missed-number-mobile">—</div>
-                      <div class="sc-anchor-missed-label" id="sc-missed-label-mobile">of potential enquiries may not be converting</div>
-                    </div>
-                  </div>
-                  <div class="sc-anchor-urgency" id="sc-urgency-callout-mobile"><span id="sc-urgency-text-mobile"></span></div>
-                  <div class="sc-anchor-fallback" id="sc-fallback-notice-mobile"><span id="sc-fallback-text-mobile"></span></div>
-                </div>
-                <!-- Mobile preview — landscape, top-anchored -->
-                <div class="sc-anchor-preview-mobile">
-                  <div class="sc-anchor-preview-header-m">
-                    <div class="sc-anchor-dots-m">
-                      <div class="sc-anchor-dot-m" style="background:#ef4444"></div>
-                      <div class="sc-anchor-dot-m" style="background:#f59e0b"></div>
-                      <div class="sc-anchor-dot-m" style="background:#22c55e"></div>
-                    </div>
-                  </div>
-                  <div class="sc-preview-img-wrap">
-                    <div id="sc-screenshot-slot-mobile">
-                      <div class="sc-screenshot-placeholder">
-                        <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/></svg>
-                        Fetching screenshot…
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div class="sc-summary-text">
+                <div id="sc-results-eyebrow" style="font-size:11px;margin-bottom:4px;color:var(--sc-w50)"></div>
+                <div class="sc-action-headline" id="sc-results-headline"></div>
+                <div class="sc-action-sub" id="sc-results-sub"></div>
               </div>
-              <!-- Mobile: book CTA below preview (always shown after unlock) -->
-              <div class="sc-anchor-divider" id="sc-anchor-divider-mobile"></div>
             </div>
-
-            <!-- Desktop action panel -->
-            <div class="sc-action-panel">
-              <div class="sc-action-score-row">
-                <div class="sc-action-score-circle">
-                  <svg viewBox="0 0 100 100" width="80" height="80">
-                    <circle class="sc-score-circle-bg" cx="50" cy="50" r="42"/>
-                    <circle class="sc-score-circle-fill" id="sc-score-ring" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/>
-                  </svg>
-                  <div class="sc-score-circle-text">
-                    <span class="sc-score-number" id="sc-score-number-el">0</span>
-                    <span class="sc-score-denom">/100</span>
+            <div class="sc-action-missed" id="sc-missed-card" style="display:none">
+              <div class="sc-action-missed-icon">📉</div>
+              <div>
+                <div class="sc-action-missed-big" id="sc-missed-number">—</div>
+                <div class="sc-action-missed-label" id="sc-missed-label">of potential enquiries may not be converting</div>
+              </div>
+            </div>
+            <div class="sc-action-urgency" id="sc-urgency-callout"><span id="sc-urgency-text"></span></div>
+            <div class="sc-action-fallback" id="sc-fallback-notice"><span id="sc-fallback-text"></span></div>
+            <!-- Screenshot preview -->
+            <div class="sc-preview-panel" style="margin-top:16px">
+              <div class="sc-preview-panel-header">
+                <div class="sc-preview-browser-dots">
+                  <div class="sc-preview-browser-dot" style="background:#ef4444"></div>
+                  <div class="sc-preview-browser-dot" style="background:#f59e0b"></div>
+                  <div class="sc-preview-browser-dot" style="background:#22c55e"></div>
+                </div>
+                <div class="sc-preview-url-bar" id="sc-screenshot-url-bar">—</div>
+              </div>
+              <div class="sc-preview-img-wrap">
+                <div id="sc-screenshot-slot">
+                  <div class="sc-screenshot-placeholder">
+                    <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/></svg>
+                    Fetching screenshot…
                   </div>
                 </div>
-                <div class="sc-action-score-text-block">
-                  <div id="sc-results-eyebrow" style="font-size:11px;margin-bottom:3px;color:var(--sc-w50)"></div>
-                  <div class="sc-action-headline" id="sc-results-headline"></div>
-                  <div class="sc-action-sub" id="sc-results-sub"></div>
-                </div>
+                <div class="sc-preview-img-overlay"><span class="sc-preview-img-label">Homepage snapshot</span></div>
               </div>
-              <div class="sc-action-missed" id="sc-missed-card" style="display:none">
-                <div class="sc-action-missed-icon">📉</div>
-                <div>
-                  <div class="sc-action-missed-big" id="sc-missed-number">—</div>
-                  <div class="sc-action-missed-label" id="sc-missed-label">of potential enquiries may not be converting</div>
-                </div>
-              </div>
-              <div class="sc-action-urgency" id="sc-urgency-callout"><span id="sc-urgency-text"></span></div>
-              <div class="sc-action-fallback" id="sc-fallback-notice"><span id="sc-fallback-text"></span></div>
-              <!-- Preview — landscape 16:9, top-anchored -->
-              <div class="sc-preview-panel" style="margin-top:16px">
-                <div class="sc-preview-panel-header">
-                  <div class="sc-preview-browser-dots">
-                    <div class="sc-preview-browser-dot" style="background:#ef4444"></div>
-                    <div class="sc-preview-browser-dot" style="background:#f59e0b"></div>
-                    <div class="sc-preview-browser-dot" style="background:#22c55e"></div>
-                  </div>
-                  <div class="sc-preview-url-bar" id="sc-screenshot-url-bar">—</div>
-                </div>
-                <div class="sc-preview-img-wrap">
-                  <div id="sc-screenshot-slot">
-                    <div class="sc-screenshot-placeholder">
-                      <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><rect x="3" y="5" width="26" height="22" rx="2" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><circle cx="10" cy="13" r="3" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><path d="M3 22l6-5 5 4 5-6 10 8" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" fill="none"/></svg>
-                      Fetching screenshot…
-                    </div>
-                  </div>
-                  <div class="sc-preview-img-overlay"><span class="sc-preview-img-label">Homepage snapshot</span></div>
-                </div>
-              </div>
-              <hr class="sc-action-divider" id="sc-action-divider-desktop">
-              <!-- Post-unlock: primary Get Started + secondary Book -->
-              <div class="sc-action-post-unlock" id="sc-action-post-unlock">
-                <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:100%;background:var(--sc-orange);border:none;cursor:pointer;margin-bottom:8px;">Get Started Now →</button>
-                <a class="sc-action-btn-secondary-link" href="#" onclick="scOpenBooking(event)" id="sc-btn-book-desktop">Book My Free Review</a>
-                <div class="sc-action-support" style="margin-top:6px">No hard sell. Fast turnaround. Built for trades.</div>
-              </div>
+            </div>
+            <!-- Post-unlock CTAs (shown after unlock) -->
+            <hr class="sc-action-divider" id="sc-action-divider-desktop" style="margin-top:16px">
+            <div class="sc-action-post-unlock" id="sc-action-post-unlock">
+              <button onclick="openBuyModal()" class="sc-action-btn-book" style="background:var(--sc-orange);border:none;cursor:pointer;margin-bottom:8px;">Get Started Now →</button>
+              <a class="sc-action-btn-secondary-link" href="#" onclick="scOpenBooking(event)" id="sc-btn-book-desktop">Book My Free Review</a>
+              <div class="sc-action-support" style="margin-top:6px">No hard sell. Fast turnaround. Built for trades.</div>
             </div>
           </div>
 
-          <!-- RIGHT: findings -->
-          <div class="sc-results-right">
-            <div class="sc-findings-panel">
-              <div class="sc-findings-preview" id="sc-findings-preview">
-                <div class="sc-findings-section-title">Score Breakdown</div>
-                <div class="sc-breakdown-bars" id="sc-breakdown-bars-teaser"></div>
-                <div id="sc-teaser-issue-wrap" style="display:none">
-                  <div class="sc-findings-section-title" style="margin-top:16px">Key Issue</div>
-                  <ul class="sc-issues-list" id="sc-teaser-issue"></ul>
-                </div>
-                <div id="sc-teaser-fix-wrap" style="display:none">
-                  <div class="sc-findings-section-title" style="margin-top:16px">Fastest Fix</div>
-                  <ul class="sc-fixes-list" id="sc-teaser-fix"></ul>
-                </div>
+          <!-- B. FINDINGS PANEL -->
+          <div class="sc-findings-panel">
+
+            <!-- Teaser (visible before unlock) -->
+            <div class="sc-findings-preview" id="sc-findings-preview">
+              <div class="sc-findings-section-title">Score Breakdown</div>
+              <div class="sc-breakdown-bars" id="sc-breakdown-bars-teaser"></div>
+              <div id="sc-teaser-issue-wrap" style="display:none">
+                <div class="sc-findings-section-title" style="margin-top:16px">Key Issue</div>
+                <ul class="sc-issues-list" id="sc-teaser-issue"></ul>
               </div>
-
-              <!-- Locked / blur — GET MY FULL BREAKDOWN is the only CTA here -->
-              <div class="sc-findings-locked" id="sc-findings-locked">
-                <div id="sc-findings-locked-ghost">
-                  <div class="sc-findings-section-title" style="margin-top:16px;opacity:.5">Full Breakdown</div>
-                  <div class="sc-breakdown-bars" style="opacity:.5">
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:130px;font-size:13px;color:var(--sc-w50)">CTA Strength</div><div style="flex:1;height:8px;background:var(--sc-navy-border);border-radius:4px;overflow:hidden"><div style="width:35%;height:100%;background:#ef4444;border-radius:4px"></div></div><div style="width:38px;text-align:right;font-size:13px;color:#ef4444">7/20</div></div>
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:130px;font-size:13px;color:var(--sc-w50)">Trust Signals</div><div style="flex:1;height:8px;background:var(--sc-navy-border);border-radius:4px;overflow:hidden"><div style="width:55%;height:100%;background:#f59e0b;border-radius:4px"></div></div><div style="width:38px;text-align:right;font-size:13px;color:#f59e0b">11/20</div></div>
-                  </div>
-                  <div class="sc-findings-section-title" style="margin-top:16px;opacity:.5">Issues Found</div>
-                  <div style="opacity:.5">
-                    <div class="sc-issue-item" style="margin-bottom:8px"><span class="sc-issue-icon">⚠</span><span>No visible phone number on mobile</span></div>
-                    <div class="sc-issue-item" style="margin-bottom:8px"><span class="sc-issue-icon">⚠</span><span>Missing local area keywords</span></div>
-                  </div>
-                </div>
-                <div class="sc-findings-blur-overlay" id="sc-findings-blur-overlay">
-                  <div class="sc-findings-blur-hint">Your full analysis is ready</div>
-                  <button class="sc-btn-unlock-inline" onclick="scOpenModal()">Get My Full Breakdown →</button>
-                </div>
+              <div id="sc-teaser-fix-wrap" style="display:none">
+                <div class="sc-findings-section-title" style="margin-top:16px">Fastest Fix</div>
+                <ul class="sc-fixes-list" id="sc-teaser-fix"></ul>
               </div>
-
-              <div class="sc-findings-unlock-strip" id="sc-unlock-strip">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12 13 5" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Unlocked — here's your full breakdown.
-              </div>
-
-              <!-- Dynamic lowest-3 weakness panel -->
-              <div id="sc-top-weaknesses" style="display:none;margin-bottom:20px;"></div>
-
-              <div class="sc-findings-full" id="sc-findings-full">
-                <!-- Collapsible full score breakdown -->
-                <button class="sc-breakdown-toggle" id="sc-breakdown-toggle" onclick="scToggleBreakdown(this)" type="button">
-                  View full score breakdown
-                  <svg class="sc-breakdown-toggle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
-                </button>
-                <div class="sc-breakdown-collapsible" id="sc-breakdown-collapsible">
-                  <div class="sc-breakdown-bars" id="sc-breakdown-bars" style="margin-top:12px;"></div>
-                </div>
-                <!-- Hidden: kept for JS compat -->
-                <div id="sc-issues-title" style="display:none"></div>
-                <ul class="sc-issues-list" id="sc-issues-list"></ul>
-                <div id="sc-fixes-title" style="display:none"></div>
-                <ul class="sc-fixes-list" id="sc-fixes-list"></ul>
-              </div>
-
-              <!-- Mobile book CTA (after unlock) -->
-              <div class="sc-mobile-book-cta" id="sc-mobile-book-cta">
-                <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:100%;background:var(--sc-orange);border:none;cursor:pointer;margin-bottom:8px;padding:16px 20px;font-size:16px;">Get Started Now →</button>
-                <a class="sc-action-btn-secondary-link" href="#" onclick="scOpenBooking(event)" style="font-size:14px">Book My Free Review</a>
-                <div class="sc-action-support" style="margin-top:8px">No hard sell. Fast turnaround. Built for trades.</div>
-              </div>
-
-              <!-- Bottom CTA bar (full results) -->
-              <div class="sc-results-bottom-cta" id="sc-results-bottom-cta" style="display:none">
-                <h3>Ready to fix this and win more jobs?</h3>
-                <p>Most sites we review have these exact issues. Fixing them typically improves enquiries within weeks.</p>
-                <div class="sc-results-bottom-btns">
-                  <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
-                  <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Book Free Review</button>
-                </div>
-                <div style="margin-top:12px;font-size:11px;color:var(--sc-w50)">No hard sell. Fast turnaround. Built for trades.</div>
-              </div>
-
             </div>
+
+            <!-- Locked overlay -->
+            <div class="sc-findings-locked" id="sc-findings-locked">
+              <div id="sc-findings-locked-ghost">
+                <div class="sc-findings-section-title" style="margin-top:16px;opacity:.5">Full Breakdown</div>
+                <div class="sc-breakdown-bars" style="opacity:.5">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:130px;font-size:13px;color:var(--sc-w50)">CTA Strength</div><div style="flex:1;height:8px;background:var(--sc-navy-border);border-radius:4px;overflow:hidden"><div style="width:35%;height:100%;background:#ef4444;border-radius:4px"></div></div><div style="width:38px;text-align:right;font-size:13px;color:#ef4444">7/20</div></div>
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><div style="width:130px;font-size:13px;color:var(--sc-w50)">Trust Signals</div><div style="flex:1;height:8px;background:var(--sc-navy-border);border-radius:4px;overflow:hidden"><div style="width:55%;height:100%;background:#f59e0b;border-radius:4px"></div></div><div style="width:38px;text-align:right;font-size:13px;color:#f59e0b">11/20</div></div>
+                </div>
+              </div>
+              <div class="sc-findings-blur-overlay" id="sc-findings-blur-overlay">
+                <div class="sc-findings-blur-hint">Your full analysis is ready</div>
+                <button class="sc-btn-unlock-inline" onclick="scOpenModal()">Get My Full Breakdown →</button>
+              </div>
+            </div>
+
+            <!-- Unlock confirmation strip -->
+            <div class="sc-findings-unlock-strip" id="sc-unlock-strip">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12 13 5" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Unlocked — here's your full breakdown.
+            </div>
+
+            <!-- Top 3 weaknesses (post-unlock) -->
+            <div id="sc-top-weaknesses" style="display:none;margin-bottom:4px;"></div>
+
+            <!-- Collapsible full score breakdown (post-unlock) -->
+            <div class="sc-findings-full" id="sc-findings-full">
+              <button class="sc-breakdown-toggle" id="sc-breakdown-toggle" onclick="scToggleBreakdown(this)" type="button">
+                View full score breakdown
+                <svg class="sc-breakdown-toggle-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+              </button>
+              <div class="sc-breakdown-collapsible" id="sc-breakdown-collapsible">
+                <div class="sc-breakdown-bars" id="sc-breakdown-bars" style="margin-top:12px;"></div>
+              </div>
+              <!-- JS compat: hidden lists -->
+              <div id="sc-issues-title" style="display:none"></div>
+              <ul class="sc-issues-list" id="sc-issues-list"></ul>
+              <div id="sc-fixes-title" style="display:none"></div>
+              <ul class="sc-fixes-list" id="sc-fixes-list"></ul>
+            </div>
+
+            <!-- Supplemental book CTA strip (after unlock, below findings) -->
+            <div class="sc-mobile-book-cta" id="sc-mobile-book-cta">
+              <button onclick="openBuyModal()" class="sc-action-btn-book" style="background:var(--sc-orange);border:none;cursor:pointer;margin-bottom:8px;padding:15px 20px;font-size:15px;">Get Started Now →</button>
+              <a class="sc-action-btn-secondary-link" href="#" onclick="scOpenBooking(event)">Book My Free Review</a>
+              <div class="sc-action-support" style="margin-top:6px">No hard sell. Fast turnaround. Built for trades.</div>
+            </div>
+
+            <!-- Final CTA section -->
+            <div class="sc-results-bottom-cta" id="sc-results-bottom-cta" style="display:none">
+              <h3>Ready to fix this and win more jobs?</h3>
+              <p>Most sites we review have these exact issues. Fixing them typically improves enquiries within weeks.</p>
+              <div class="sc-results-bottom-btns">
+                <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
+                <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Book Free Review</button>
+              </div>
+              <div style="margin-top:12px;font-size:11px;color:var(--sc-w50)">No hard sell. Fast turnaround. Built for trades.</div>
+            </div>
+
+          </div><!-- /sc-findings-panel -->
+
+          <!-- Hidden mobile ID mirrors — kept for JS compat, never visible -->
+          <div style="display:none" aria-hidden="true">
+            <svg><circle class="sc-score-circle-fill" id="sc-score-ring-mobile" stroke-dasharray="264" stroke-dashoffset="264"/></svg>
+            <span id="sc-score-number-mobile"></span>
+            <span id="sc-results-eyebrow-mobile"></span>
+            <span id="sc-results-headline-mobile"></span>
+            <span id="sc-results-sub-mobile"></span>
+            <span id="sc-missed-number-mobile"></span>
+            <span id="sc-missed-label-mobile"></span>
+            <div id="sc-missed-card-mobile"></div>
+            <span id="sc-urgency-text-mobile"></span>
+            <div id="sc-urgency-callout-mobile"></div>
+            <span id="sc-fallback-text-mobile"></span>
+            <div id="sc-fallback-notice-mobile"></div>
+            <div id="sc-screenshot-slot-mobile"></div>
+            <div id="sc-anchor-divider-mobile"></div>
           </div>
-        </div>
+
+        </div><!-- /sc-results-flow -->
       </section>
 
       <!-- STATE 4: SUCCESS -->
@@ -1849,6 +1822,12 @@ function scShowState(id) {
   document.querySelectorAll('.sc-state').forEach(s => s.classList.remove('active'));
   const el = document.getElementById(id);
   if (el) el.classList.add('active');
+  // Hide mobile sticky bar while results are showing
+  if (id === 'sc-state-results') {
+    document.body.classList.add('sc-results-active');
+  } else {
+    document.body.classList.remove('sc-results-active');
+  }
   document.getElementById('scanner').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2168,20 +2147,34 @@ function scUnlockDetails() {
   if(detailsUnlocked)return;
   detailsUnlocked=true;
   scCloseModal();
+
+  // Hide blur overlay and locked ghost
   document.getElementById('sc-findings-blur-overlay')?.classList.add('hidden');
   const locked=document.getElementById('sc-findings-locked');if(locked)locked.style.display='none';
+
+  // Hide teaser content (score breakdown teaser + key issue + fastest fix)
+  const preview=document.getElementById('sc-findings-preview');if(preview)preview.style.display='none';
+
+  // Show unlock confirmation
   document.getElementById('sc-unlock-strip')?.classList.add('visible');
+
+  // Reveal full content
   document.getElementById('sc-findings-full')?.classList.add('revealed');
+
   // Show weaknesses panel
   const wp=document.getElementById('sc-top-weaknesses');if(wp)wp.style.display='block';
+
+  // Show post-unlock CTAs in summary card
   const dd=document.getElementById('sc-action-divider-desktop');if(dd)dd.classList.add('visible');
   const po=document.getElementById('sc-action-post-unlock');
   if(po){po.style.display='block';po.style.opacity='0';requestAnimationFrame(()=>{requestAnimationFrame(()=>{po.style.opacity='1';});});}
+
+  // Show supplemental book CTA strip and final CTA
   document.getElementById('sc-mobile-book-cta')?.classList.add('visible');
-  const dm=document.getElementById('sc-anchor-divider-mobile');if(dm)dm.style.display='block';
-  // Show bottom CTA bar
   const bc=document.getElementById('sc-results-bottom-cta');if(bc)bc.style.display='block';
-  setTimeout(()=>{ document.getElementById('sc-findings-preview')?.scrollIntoView({behavior:'smooth',block:'start'}); },350);
+
+  // Scroll to top of weaknesses section
+  setTimeout(()=>{ document.getElementById('sc-top-weaknesses')?.scrollIntoView({behavior:'smooth',block:'start'}); },350);
 }
 
 /* ── SUBMIT LEAD ─────────────────────────────────────────────────────────── */
