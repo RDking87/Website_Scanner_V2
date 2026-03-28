@@ -4,9 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>More Jobs From Your Website — TradeConvert</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='185 4 40 65'%3E%3Crect x='185' y='4' width='40' height='61' rx='7' fill='%230B1525'/%3E%3Cpath fill='%23F4600C' d='M188.64 48.24V23.68Q188.64 16.16 193.2 11.76Q197.76 7.36 205.36 7.36Q212.96 7.36 217.56 11.76Q222.16 16.16 222.16 23.68V24.4Q222.16 24.8 221.88 25.08Q221.6 25.36 221.2 25.36L209.84 25.84Q208.88 25.84 208.88 24.88V22.72Q208.88 20.88 207.92 19.8Q206.96 18.72 205.36 18.72Q203.84 18.72 202.88 19.8Q201.92 20.88 201.92 22.72V49.36Q201.92 51.12 202.88 52.2Q203.84 53.28 205.36 53.28Q206.96 53.28 207.92 52.2Q208.88 51.12 208.88 49.36V47.04Q208.88 46.64 209.16 46.36Q209.44 46.08 209.84 46.08L221.2 46.56Q221.6 46.56 221.88 46.84Q222.16 47.12 222.16 47.52V48.24Q222.16 55.68 217.56 60.16Q212.96 64.64 205.36 64.64Q197.76 64.64 193.2 60.16Q188.64 55.68 188.64 48.24Z'/%3E%3C/svg%3E">
+<!-- ── Favicon: Option B · C mark (crisp at 16–32px) ── -->
+<!-- Favicon: Option B · C mark -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1525'/%3E%3Ccircle cx='16' cy='16' r='9.5' fill='none' stroke='%23F4600C' stroke-width='5.5' stroke-linecap='butt' stroke-dasharray='49.74 9.95' transform='rotate(30 16 16)'/%3E%3C/svg%3E">
+<!-- Apple touch / PWA: Option A · TC square -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B1525'/%3E%3Crect x='5' y='19' width='36' height='10' fill='white'/%3E%3Crect x='14' y='29' width='12' height='48' fill='white'/%3E%3Ccircle cx='69' cy='48' r='21' fill='none' stroke='%23F4600C' stroke-width='11' stroke-linecap='butt' stroke-dasharray='109.96 21.99' transform='rotate(30 69 48)'/%3E%3C/svg%3E">
+<!-- ── Apple touch / PWA: Option A · TC square (reads well at 180px+) ── -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230B1525'/%3E%3Crect x='5' y='19' width='36' height='10' fill='white'/%3E%3Crect x='14' y='29' width='12' height='48' fill='white'/%3E%3Ccircle cx='69' cy='48' r='21' fill='none' stroke='%23F4600C' stroke-width='11' stroke-linecap='butt' stroke-dasharray='109.96 21.99' transform='rotate(30 69 48)'/%3E%3C/svg%3E">
+<!-- ── Fonts: Barlow Condensed (display/headings) + Inter (UI/body) ── -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
 
 <style>
@@ -29,22 +37,88 @@
   --calendly-url: "https://calendly.com/rosch-rdklive/10mins";
 }
 
+/* ══ BRAND ANIMATION — Hero logo · one-time on load ═══════════════════════ */
+
+/* Hero logo container — centred, sits above main hero copy */
+.hero-logo-anim {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  overflow: visible;
+}
+.hero-logo-anim svg {
+  display: block;
+  height: 52px;
+  width: auto;
+  overflow: visible;
+}
+@media(max-width: 600px) {
+  .hero-logo-anim svg { height: 36px; }
+}
+
+/* Initial state: all groups invisible until .playing is added */
+.hero-logo-anim .logo-trade,
+.hero-logo-anim .logo-convert,
+.hero-logo-anim .logo-couk { opacity: 0; }
+
+/* ── Brand animation (expo-out easing, one-time) ── */
+@media (prefers-reduced-motion: no-preference) {
+
+  @keyframes tc-trade-in {
+    from { opacity: 0; transform: translateX(-18px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes tc-convert-in {
+    from { opacity: 0; transform: translateX(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  @keyframes tc-couk-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes tc-convert-flash {
+    0%, 100% { filter: brightness(1); }
+    60%      { filter: brightness(1.18); }
+  }
+
+  /* Triggered by .playing class added via JS on load */
+  .hero-logo-anim.playing .logo-trade {
+    animation: tc-trade-in 550ms cubic-bezier(.16,1,.3,1) 80ms both;
+  }
+  .hero-logo-anim.playing .logo-convert {
+    animation: tc-convert-in  600ms cubic-bezier(.16,1,.3,1) 200ms both,
+               tc-convert-flash 380ms ease-out               760ms both;
+  }
+  .hero-logo-anim.playing .logo-couk {
+    animation: tc-couk-in 420ms ease-out 460ms both;
+  }
+}
+
+/* Reduced-motion fallback: simple fast fade for all groups */
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-anim.playing .logo-trade,
+  .hero-logo-anim.playing .logo-convert,
+  .hero-logo-anim.playing .logo-couk {
+    animation: tc-couk-in 200ms ease-out both;
+  }
+}
+
 /* ══ RESET ══════════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--white);color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;}
+body{background:var(--white);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:16px;line-height:1.5;overflow-x:hidden;}
 button,input,select,textarea{font:inherit;}
 
 /* ══ NAV ════════════════════════════════════════════════════════════════════ */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--navy);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
 .logo{display:flex;align-items:center;text-decoration:none;flex-shrink:0;}
-.logo-svg{height:32px;width:auto;display:block;}
-footer .logo-svg{height:22px;}
+.logo-svg{height:30px;width:auto;display:block;}  /* brand spec: 28–32px */
+footer .logo-svg{height:24px;}  /* brand spec: 22–26px */
 .nav-right{display:flex;align-items:center;gap:.75rem;}
-.nav-phone{display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.82rem;font-weight:600;text-decoration:none;transition:color .2s;}
+.nav-phone{display:flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);font-size:.82rem;font-weight:500;font-family:'Inter',system-ui,sans-serif;text-decoration:none;transition:color .2s;}
 .nav-phone:hover{color:var(--white);}
 .nav-phone svg{width:14px;height:14px;color:var(--orange);}
-.nav-cta{background:var(--orange);color:var(--white);padding:.55rem 1.2rem;border-radius:3px;font-weight:700;font-size:.82rem;text-decoration:none;white-space:nowrap;}
+.nav-cta{background:var(--orange);color:var(--white);padding:.55rem 1.2rem;border-radius:3px;font-weight:600;font-size:.82rem;font-family:'Inter',system-ui,sans-serif;text-decoration:none;white-space:nowrap;}
 @media(max-width:768px){
   nav{padding:.8rem 1.2rem;}
   .logo-svg{height:24px;}
@@ -66,7 +140,7 @@ footer .logo-svg{height:22px;}
 .mcb-btn{
   flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
   padding:.75rem .5rem;border-radius:6px;font-weight:700;font-size:.8rem;
-  text-decoration:none;border:none;cursor:pointer;font-family:'Barlow',sans-serif;
+  text-decoration:none;border:none;cursor:pointer;font-family:'Inter',system-ui,sans-serif;
   min-height:48px;
 }
 .mcb-call{background:var(--orange);color:#fff;}
@@ -214,7 +288,7 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 .sc-scan-form{background:var(--sc-navy-card);border:1px solid var(--sc-navy-border);border-radius:var(--sc-rlg);padding:28px;}
 .sc-form-row{margin-bottom:10px;}
 .sc-form-label{display:block;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--sc-w50);margin-bottom:7px;}
-.sc-form-input{width:100%;background:var(--sc-navy-light);border:1.5px solid var(--sc-navy-border);border-radius:var(--sc-r);color:#fff;font-size:14px;padding:10px 13px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:'Barlow',sans-serif;}
+.sc-form-input{width:100%;background:var(--sc-navy-light);border:1.5px solid var(--sc-navy-border);border-radius:var(--sc-r);color:#fff;font-size:14px;padding:10px 13px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:'Inter',system-ui,sans-serif;}
 .sc-form-input::placeholder{color:var(--sc-w50);}
 .sc-form-input:focus{border-color:var(--sc-orange);box-shadow:0 0 0 3px var(--sc-orange-glow);}
 .sc-form-input.error{border-color:var(--sc-red);}
@@ -223,7 +297,7 @@ h2 .em{color:var(--orange);} h2.light{color:var(--white);}
 @media(max-width:500px){.sc-form-row-split{grid-template-columns:1fr;}}
 .sc-hint{font-size:12px;color:var(--sc-w50);margin-top:5px;}
 .sc-error-banner{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--sc-r);padding:12px 16px;font-size:14px;color:#fca5a5;margin-bottom:18px;display:none;}
-.sc-btn-scan{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:.03em;padding:15px 24px;cursor:pointer;transition:background .2s,transform .1s;margin-top:8px;text-transform:uppercase;}
+.sc-btn-scan{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:18px;letter-spacing:.03em;padding:15px 24px;cursor:pointer;transition:background .2s,transform .1s;margin-top:8px;text-transform:uppercase;}
 .sc-btn-scan:hover{background:var(--sc-orange-dark);}
 .sc-btn-scan:active{transform:scale(.98);}
 .sc-btn-scan:disabled{opacity:.6;cursor:not-allowed;transform:none;}
@@ -348,10 +422,10 @@ body.sc-results-active .mobile-contact-bar{
 .sc-preview-img-label{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.38);font-weight:500;}
 
 /* Action buttons */
-.sc-action-btn-primary{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em;padding:13px 18px;cursor:pointer;text-transform:uppercase;transition:background .2s,transform .1s;display:block;text-align:center;text-decoration:none;margin-bottom:6px;}
+.sc-action-btn-primary{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:15px;letter-spacing:.02em;padding:13px 18px;cursor:pointer;text-transform:uppercase;transition:background .2s,transform .1s;display:block;text-align:center;text-decoration:none;margin-bottom:6px;}
 .sc-action-btn-primary:hover{background:var(--sc-orange-dark);}
 .sc-action-btn-primary:active{transform:scale(.98);}
-.sc-action-btn-book{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em;padding:14px 18px;cursor:pointer;text-transform:uppercase;display:block;text-align:center;text-decoration:none;margin-bottom:6px;box-shadow:0 3px 12px rgba(249,115,22,.28),0 1px 3px rgba(0,0,0,.2);transition:background .2s,transform .15s,box-shadow .2s;}
+.sc-action-btn-book{width:100%;background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:15px;letter-spacing:.02em;padding:14px 18px;cursor:pointer;text-transform:uppercase;display:block;text-align:center;text-decoration:none;margin-bottom:6px;box-shadow:0 3px 12px rgba(249,115,22,.28),0 1px 3px rgba(0,0,0,.2);transition:background .2s,transform .15s,box-shadow .2s;}
 .sc-action-btn-book:hover{background:var(--sc-orange-dark);transform:translateY(-2px);box-shadow:0 5px 20px rgba(249,115,22,.38),0 2px 6px rgba(0,0,0,.2);}
 .sc-action-btn-book:active{transform:scale(.98);box-shadow:none;}
 .sc-action-btn-book.booked{background:#166534;color:rgba(255,255,255,.92);box-shadow:0 0 0 1px rgba(34,197,94,.3),0 2px 10px rgba(34,197,94,.15);cursor:default;pointer-events:none;transform:none;}
@@ -376,7 +450,7 @@ body.sc-results-active .mobile-contact-bar{
 .sc-findings-blur-overlay{position:absolute;inset:0;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(8,14,26,.55);border-radius:var(--sc-r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;transition:opacity .4s;z-index:2;}
 .sc-findings-blur-overlay.hidden{opacity:0;pointer-events:none;}
 .sc-findings-blur-hint{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.05em;}
-.sc-btn-unlock-inline{background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;padding:12px 22px;cursor:pointer;text-transform:uppercase;transition:background .2s,transform .15s,box-shadow .2s;white-space:nowrap;box-shadow:0 3px 14px rgba(249,115,22,.3),0 1px 4px rgba(0,0,0,.3);}
+.sc-btn-unlock-inline{background:var(--sc-orange);color:#fff;border:none;border-radius:var(--sc-r);font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:12px 22px;cursor:pointer;text-transform:uppercase;transition:background .2s,transform .15s,box-shadow .2s;white-space:nowrap;box-shadow:0 3px 14px rgba(249,115,22,.3),0 1px 4px rgba(0,0,0,.3);}
 .sc-btn-unlock-inline:hover{background:var(--sc-orange-dark);transform:translateY(-2px);}
 .sc-findings-full{overflow:hidden;max-height:0;opacity:0;transition:max-height .7s ease,opacity .5s ease;}
 .sc-findings-full.revealed{max-height:2400px;opacity:1;}
@@ -391,6 +465,28 @@ body.sc-results-active .mobile-contact-bar{
 .sc-bar-track{flex:1;height:8px;background:var(--sc-navy-border);border-radius:4px;overflow:hidden;}
 .sc-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.34,1.2,.64,1);width:0%;}
 .sc-bar-score{width:38px;text-align:right;font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;}
+
+/* Scan-based recommendation badge */
+.pc-badge.rec-badge{
+  background:rgba(34,197,94,.12);
+  border:1px solid rgba(34,197,94,.35);
+  color:#22c55e;
+}
+.price-card.scan-recommended{
+  /* subtle green glow overlay — does not override existing border */
+  box-shadow:0 0 0 2px rgba(34,197,94,.45),0 12px 40px rgba(11,21,37,.18);
+}
+.price-card.featured.scan-recommended{
+  box-shadow:0 0 0 2px rgba(34,197,94,.5),0 12px 40px rgba(11,21,37,.22);
+}
+@keyframes pcPulse{
+  0%  {box-shadow:0 0 0 2px rgba(34,197,94,.45),0 12px 40px rgba(11,21,37,.18);}
+  40% {box-shadow:0 0 0 6px rgba(34,197,94,.25),0 12px 40px rgba(11,21,37,.18);}
+  100%{box-shadow:0 0 0 2px rgba(34,197,94,.45),0 12px 40px rgba(11,21,37,.18);}
+}
+.price-card.scan-pulse{
+  animation:pcPulse 600ms ease-out 1 forwards;
+}
 
 /* Results bottom CTA bar */
 .sc-results-bottom-cta{
@@ -440,7 +536,7 @@ body.sc-results-active .mobile-contact-bar{
   display:flex;align-items:center;justify-content:space-between;
   width:100%;background:none;border:none;
   padding:12px 0;cursor:pointer;
-  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;
+  font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:600;
   color:var(--sc-w50);text-align:left;
   border-top:1px solid var(--sc-navy-border);
   margin-top:20px;transition:color .15s;
@@ -461,9 +557,9 @@ body.sc-results-active .mobile-contact-bar{
 .sc-modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;margin-bottom:4px;padding-right:26px;line-height:1.1;color:#fff;}
 .sc-modal-body{font-size:12px;color:var(--sc-w50);margin-bottom:14px;line-height:1.5;}
 .sc-qualifier-block{margin-bottom:12px;}
-.sc-qualifier-headline{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--sc-w50);margin-bottom:8px;}
+.sc-qualifier-headline{font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--sc-w50);margin-bottom:8px;}
 .sc-qualifier-options{display:flex;flex-direction:column;gap:5px;}
-.sc-qualifier-option{background:var(--sc-navy-light);border:1.5px solid var(--sc-navy-border);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:500;color:var(--sc-w80);cursor:pointer;text-align:left;transition:border-color .15s,background .15s,color .15s;display:flex;align-items:center;gap:9px;width:100%;font-family:'Barlow',sans-serif;}
+.sc-qualifier-option{background:var(--sc-navy-light);border:1.5px solid var(--sc-navy-border);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:500;color:var(--sc-w80);cursor:pointer;text-align:left;transition:border-color .15s,background .15s,color .15s;display:flex;align-items:center;gap:9px;width:100%;font-family:'Inter',system-ui,sans-serif;}
 .sc-qualifier-option:hover{border-color:rgba(249,115,22,.5);background:rgba(249,115,22,.06);color:#fff;}
 .sc-qualifier-option.selected{border-color:var(--sc-orange);background:rgba(249,115,22,.12);color:#fff;}
 .sc-qualifier-option-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--sc-navy-border);flex-shrink:0;transition:border-color .15s,background .15s;}
@@ -498,7 +594,7 @@ body.sc-results-active .mobile-contact-bar{
 .sc-booked-btns{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto;}
 .sc-booked-btn-close{
   background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--sc-w80);
-  border-radius:3px;font-family:'Barlow',sans-serif;font-weight:600;
+  border-radius:3px;font-family:'Inter',system-ui,sans-serif;font-weight:600;
   font-size:.88rem;padding:12px 20px;cursor:pointer;
   transition:border-color .2s,color .2s;
 }
@@ -542,7 +638,7 @@ body.sc-results-active .mobile-contact-bar{
 .buy-form-input{
   width:100%;background:var(--sc-navy-light);border:1.5px solid var(--sc-navy-border);
   border-radius:var(--sc-r);color:#fff;font-size:14px;padding:10px 13px;
-  outline:none;transition:border-color .2s,box-shadow .2s;font-family:'Barlow',sans-serif;
+  outline:none;transition:border-color .2s,box-shadow .2s;font-family:'Inter',system-ui,sans-serif;
 }
 .buy-form-input::placeholder{color:var(--sc-w50);}
 .buy-form-input:focus{border-color:var(--sc-orange);box-shadow:0 0 0 3px var(--sc-orange-glow);}
@@ -586,7 +682,7 @@ body.sc-results-active .mobile-contact-bar{
 }
 .buy-success-close{
   background:transparent;border:1.5px solid rgba(255,255,255,.2);color:var(--sc-w80);
-  border-radius:3px;font-family:'Barlow',sans-serif;font-weight:600;
+  border-radius:3px;font-family:'Inter',system-ui,sans-serif;font-weight:600;
   font-size:.88rem;padding:11px 20px;cursor:pointer;
   transition:border-color .2s,color .2s;
 }
@@ -1009,6 +1105,14 @@ footer .logo{}
 
 <!-- ══ HERO ════════════════════════════════════════════════════════════════════ -->
 <section class="hero">
+  <!-- ══ Brand logo animation — plays once on load ══ -->
+  <div class="hero-logo-anim" id="heroLogoAnim" aria-hidden="true">
+    <svg viewBox="0 0 438.56 99.5" role="img" aria-label="TradeConvert.co.uk" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+      <g class="logo-trade" fill="#FFFFFF"><path d="M32.72 8.96V15.04Q32.72 15.44 32.44 15.72Q32.16 16 31.76 16H21.6Q21.2 16 21.2 16.4V63.04Q21.2 63.44 20.92 63.72Q20.64 64 20.24 64H12.88Q12.48 64 12.2 63.72Q11.92 63.44 11.92 63.04V16.4Q11.92 16 11.52 16H1.84Q1.44 16 1.16 15.72Q0.88 15.44 0.88 15.04V8.96Q0.88 8.56 1.16 8.28Q1.44 8 1.84 8H31.76Q32.16 8 32.44 8.28Q32.72 8.56 32.72 8.96Z"/><path d="M60.72 63.2 53.92 40.24Q53.76 39.92 53.52 39.92H49.28Q48.88 39.92 48.88 40.32V63.04Q48.88 63.44 48.6 63.72Q48.32 64 47.92 64H40.56Q40.16 64 39.88 63.72Q39.6 63.44 39.6 63.04V8.96Q39.6 8.56 39.88 8.28Q40.16 8 40.56 8H55.6Q59.84 8 63.08 10.04Q66.32 12.08 68.12 15.8Q69.92 19.52 69.92 24.32Q69.92 29.28 68 32.92Q66.08 36.56 62.64 38.4Q62.32 38.56 62.4 38.88L70.16 62.88Q70.24 63.04 70.24 63.28Q70.24 64 69.36 64H61.76Q60.96 64 60.72 63.2ZM48.88 16.4V32.32Q48.88 32.72 49.28 32.72H54.08Q57.04 32.72 58.84 30.48Q60.64 28.24 60.64 24.4Q60.64 20.56 58.84 18.28Q57.04 16 54.08 16H49.28Q48.88 16 48.88 16.4Z"/><path d="M100 63.12 98.48 54.72Q98.48 54.32 98 54.32H86.32Q85.84 54.32 85.84 54.72L84.32 63.12Q84.24 64 83.28 64H75.92Q74.88 64 75.12 62.96L86.88 8.88Q87.04 8 87.92 8H96.48Q97.36 8 97.52 8.88L109.36 62.96V63.28Q109.36 64 108.48 64H101.04Q100.08 64 100 63.12ZM87.68 47.04H96.56Q97.04 47.04 96.96 46.64L92.32 21.36Q92.24 21.12 92.08 21.12Q91.92 21.12 91.84 21.36L87.28 46.64Q87.2 47.04 87.68 47.04Z"/><path d="M117.28 8H130.88Q137.76 8 141.92 12.16Q146.08 16.32 146.08 23.28V48.72Q146.08 55.68 141.92 59.84Q137.76 64 130.88 64H117.28Q116.88 64 116.6 63.72Q116.32 63.44 116.32 63.04V8.96Q116.32 8.56 116.6 8.28Q116.88 8 117.28 8ZM136.8 48.16V23.84Q136.8 20.24 135.16 18.12Q133.52 16 130.72 16H126Q125.6 16 125.6 16.4V55.6Q125.6 56 126 56L130.8 55.92Q133.44 55.92 135.04 53.8Q136.64 51.68 136.8 48.16Z"/><path d="M181.84 16H164.56Q164.16 16 164.16 16.4V31.52Q164.16 31.92 164.56 31.92H174.8Q175.2 31.92 175.48 32.2Q175.76 32.48 175.76 32.88V39.04Q175.76 39.44 175.48 39.72Q175.2 40 174.8 40H164.56Q164.16 40 164.16 40.4V55.6Q164.16 56 164.56 56H181.84Q182.24 56 182.52 56.28Q182.8 56.56 182.8 56.96V63.04Q182.8 63.44 182.52 63.72Q182.24 64 181.84 64H155.84Q155.44 64 155.16 63.72Q154.88 63.44 154.88 63.04V8.96Q154.88 8.56 155.16 8.28Q155.44 8 155.84 8H181.84Q182.24 8 182.52 8.28Q182.8 8.56 182.8 8.96V15.04Q182.8 15.44 182.52 15.72Q182.24 16 181.84 16Z"/></g>
+      <g class="logo-convert" fill="#F4600C"><path d="M188.64 48.24V23.68Q188.64 16.16 193.2 11.76Q197.76 7.36 205.36 7.36Q212.96 7.36 217.56 11.76Q222.16 16.16 222.16 23.68V24.4Q222.16 24.8 221.88 25.08Q221.6 25.36 221.2 25.36L209.84 25.84Q208.88 25.84 208.88 24.88V22.72Q208.88 20.88 207.92 19.8Q206.96 18.72 205.36 18.72Q203.84 18.72 202.88 19.8Q201.92 20.88 201.92 22.72V49.36Q201.92 51.12 202.88 52.2Q203.84 53.28 205.36 53.28Q206.96 53.28 207.92 52.2Q208.88 51.12 208.88 49.36V47.04Q208.88 46.64 209.16 46.36Q209.44 46.08 209.84 46.08L221.2 46.56Q221.6 46.56 221.88 46.84Q222.16 47.12 222.16 47.52V48.24Q222.16 55.68 217.56 60.16Q212.96 64.64 205.36 64.64Q197.76 64.64 193.2 60.16Q188.64 55.68 188.64 48.24Z"/><path d="M223.2 48.08V23.92Q223.2 16.4 227.8 11.88Q232.4 7.36 240.16 7.36Q247.92 7.36 252.56 11.88Q257.2 16.4 257.2 23.92V48.08Q257.2 55.68 252.56 60.16Q247.92 64.64 240.16 64.64Q232.4 64.64 227.8 60.16Q223.2 55.68 223.2 48.08ZM243.92 48.64V23.36Q243.92 21.2 242.92 19.96Q241.92 18.72 240.16 18.72Q238.4 18.72 237.44 19.96Q236.48 21.2 236.48 23.36V48.64Q236.48 50.8 237.44 52.04Q238.4 53.28 240.16 53.28Q241.92 53.28 242.92 52.04Q243.92 50.8 243.92 48.64Z"/><path d="M284.32 8H295.52Q295.92 8 296.2 8.28Q296.48 8.56 296.48 8.96V63.04Q296.48 63.44 296.2 63.72Q295.92 64 295.52 64H282.8Q281.92 64 281.68 63.2L273.76 35.36Q273.68 35.12 273.48 35.08Q273.28 35.04 273.28 35.36L273.44 63.04Q273.44 63.44 273.16 63.72Q272.88 64 272.48 64H261.2Q260.8 64 260.52 63.72Q260.24 63.44 260.24 63.04V8.96Q260.24 8.56 260.52 8.28Q260.8 8 261.2 8H273.76Q274.64 8 274.88 8.8L282.96 36.8Q283.04 37.04 283.2 37Q283.36 36.96 283.36 36.72V8.96Q283.36 8.56 283.64 8.28Q283.92 8 284.32 8Z"/><path d="M322.48 8H334.56Q335.6 8 335.36 9.04L323.92 63.12Q323.76 64 322.88 64H310.32Q309.44 64 309.28 63.12L297.92 9.04L297.84 8.72Q297.84 8 298.72 8H311.12Q312.08 8 312.16 8.88L316.72 41.52Q316.8 41.76 317 41.76Q317.2 41.76 317.2 41.52L321.52 8.88Q321.6 8 322.48 8Z"/><path d="M366.56 19.36H350.4Q350 19.36 350 19.76V29.84Q350 30.24 350.4 30.24H359.28Q359.68 30.24 359.96 30.52Q360.24 30.8 360.24 31.2V40.72Q360.24 41.12 359.96 41.4Q359.68 41.68 359.28 41.68H350.4Q350 41.68 350 42.08V52.24Q350 52.64 350.4 52.64H366.56Q366.96 52.64 367.24 52.92Q367.52 53.2 367.52 53.6V63.04Q367.52 63.44 367.24 63.72Q366.96 64 366.56 64H337.68Q337.28 64 337 63.72Q336.72 63.44 336.72 63.04V8.96Q336.72 8.56 337 8.28Q337.28 8 337.68 8H366.56Q366.96 8 367.24 8.28Q367.52 8.56 367.52 8.96V18.4Q367.52 18.8 367.24 19.08Q366.96 19.36 366.56 19.36Z"/><path d="M390.48 63.2 385.04 42Q384.96 41.68 384.64 41.68H383.44Q383.04 41.68 383.04 42.08V63.04Q383.04 63.44 382.76 63.72Q382.48 64 382.08 64H370.72Q370.32 64 370.04 63.72Q369.76 63.44 369.76 63.04V8.96Q369.76 8.56 370.04 8.28Q370.32 8 370.72 8H388Q392.64 8 396.2 10.2Q399.76 12.4 401.76 16.36Q403.76 20.32 403.76 25.36Q403.76 29.92 402.08 33.44Q400.4 36.96 397.44 39.12Q397.28 39.2 397.2 39.32Q397.12 39.44 397.2 39.6L404.08 62.88L404.16 63.2Q404.16 64 403.28 64H391.6Q390.72 64 390.48 63.2ZM383.04 19.76V31.12Q383.04 31.52 383.44 31.52H385.68Q387.84 31.52 389.16 29.92Q390.48 28.32 390.48 25.52Q390.48 22.56 389.16 20.96Q387.84 19.36 385.68 19.36H383.44Q383.04 19.36 383.04 19.76Z"/><path d="M439.6 8.96V18.4Q439.6 18.8 439.32 19.08Q439.04 19.36 438.64 19.36H428.8Q428.4 19.36 428.4 19.76V63.04Q428.4 63.44 428.12 63.72Q427.84 64 427.44 64H416.08Q415.68 64 415.4 63.72Q415.12 63.44 415.12 63.04V19.76Q415.12 19.36 414.72 19.36H405.12Q404.72 19.36 404.44 19.08Q404.16 18.8 404.16 18.4V8.96Q404.16 8.56 404.44 8.28Q404.72 8 405.12 8H438.64Q439.04 8 439.32 8.28Q439.6 8.56 439.6 8.96Z"/></g>
+      <g class="logo-couk" fill="#5C82A0"><path d="M402.83 94.465Q402.83 94 403.13 93.7Q403.43 93.4 403.895 93.4Q404.36 93.4 404.653 93.7Q404.945 94 404.945 94.465Q404.945 94.93 404.645 95.23Q404.345 95.53 403.895 95.53Q403.43 95.53 403.13 95.23Q402.83 94.93 402.83 94.465Z"/><path d="M406.745 93.175V90.145Q406.745 89.05 407.457 88.382Q408.17 87.715 409.4 87.715Q410.63 87.715 411.35 88.368Q412.07 89.02 412.07 90.025V90.235Q412.07 90.31 412.018 90.363Q411.965 90.415 411.89 90.415L410.51 90.475Q410.33 90.475 410.33 90.295V90.145Q410.33 89.77 410.067 89.493Q409.805 89.215 409.4 89.215Q408.995 89.215 408.74 89.515Q408.485 89.815 408.485 90.28V93.055Q408.485 93.52 408.74 93.82Q408.995 94.12 409.4 94.12Q409.805 94.12 410.067 93.843Q410.33 93.565 410.33 93.175V93.025Q410.33 92.95 410.383 92.898Q410.435 92.845 410.51 92.845L411.89 92.86Q411.965 92.86 412.018 92.912Q412.07 92.965 412.07 93.04V93.31Q412.07 94.345 411.35 94.983Q410.63 95.62 409.4 95.62Q408.17 95.62 407.457 94.96Q406.745 94.3 406.745 93.175Z"/><path d="M413.645 93.175V90.16Q413.645 89.05 414.365 88.382Q415.085 87.715 416.315 87.715Q417.56 87.715 418.28 88.382Q419 89.05 419 90.16V93.175Q419 94.3 418.288 94.96Q417.575 95.62 416.315 95.62Q415.07 95.62 414.357 94.96Q413.645 94.3 413.645 93.175ZM417.26 93.04V90.28Q417.26 89.815 416.998 89.515Q416.735 89.215 416.315 89.215Q415.895 89.215 415.64 89.507Q415.385 89.8 415.385 90.28V93.04Q415.385 93.52 415.64 93.812Q415.895 94.105 416.315 94.105Q416.735 94.105 416.998 93.812Q417.26 93.52 417.26 93.04Z"/><path d="M420.8 94.465Q420.8 94 421.1 93.7Q421.4 93.4 421.865 93.4Q422.33 93.4 422.622 93.7Q422.915 94 422.915 94.465Q422.915 94.93 422.615 95.23Q422.315 95.53 421.865 95.53Q421.4 95.53 421.1 95.23Q420.8 94.93 420.8 94.465Z"/><path d="M428.6 87.835H429.98Q430.055 87.835 430.107 87.887Q430.16 87.94 430.16 88.015V95.32Q430.16 95.395 430.107 95.447Q430.055 95.5 429.98 95.5H428.6Q428.525 95.5 428.472 95.447Q428.42 95.395 428.42 95.32V94.99Q428.42 94.945 428.39 94.93Q428.36 94.915 428.33 94.96Q427.895 95.605 426.935 95.605Q426.02 95.605 425.457 95.058Q424.895 94.51 424.895 93.37V88.015Q424.895 87.94 424.947 87.887Q425 87.835 425.075 87.835H426.455Q426.53 87.835 426.582 87.887Q426.635 87.94 426.635 88.015V92.995Q426.635 94.12 427.505 94.12Q427.94 94.12 428.18 93.797Q428.42 93.475 428.42 92.92V88.015Q428.42 87.94 428.472 87.887Q428.525 87.835 428.6 87.835Z"/><path d="M432.425 85H433.805Q433.88 85 433.933 85.053Q433.985 85.105 433.985 85.18V90.52Q433.985 90.58 434.015 90.58Q434.045 90.58 434.075 90.535L435.71 87.955Q435.77 87.835 435.92 87.835H437.36Q437.465 87.835 437.495 87.903Q437.525 87.97 437.465 88.06L435.905 90.415Q435.875 90.475 435.89 90.52L437.69 95.29Q437.705 95.32 437.705 95.365Q437.705 95.5 437.54 95.5H436.115Q435.965 95.5 435.92 95.35L434.825 91.96Q434.81 91.915 434.787 91.915Q434.765 91.915 434.735 91.945L434.015 92.995Q433.985 93.055 433.985 93.085V95.32Q433.985 95.395 433.933 95.447Q433.88 95.5 433.805 95.5H432.425Q432.35 95.5 432.297 95.447Q432.245 95.395 432.245 95.32V85.18Q432.245 85.105 432.297 85.053Q432.35 85 432.425 85Z"/></g>
+    </svg>
+  </div>
   <div class="hero-badge"><span class="badge-dot"></span> For Trades Businesses</div>
   <h1><span class="block">Your website</span><span class="block highlight">is costing</span><span class="block">you jobs</span></h1>
   <p class="hero-sub">Most trade websites lose enquiries every single day. We rebuild yours to generate calls and leads — in 48–72 hours.</p>
@@ -1243,7 +1347,7 @@ footer .logo{}
               <h3>Ready to fix this and win more jobs?</h3>
               <p>Most sites we review have these exact issues. Fixing them typically improves enquiries within weeks.</p>
               <div class="sc-results-bottom-btns">
-                <button onclick="openBuyModal()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
+                <button onclick="scrollToPricing()" class="sc-action-btn-book" style="width:auto;padding:14px 28px;font-size:15px;background:var(--sc-orange);border:none;cursor:pointer;">Get Started Now →</button>
                 <button onclick="scOpenBooking(null)" class="sc-mcta-secondary" style="padding:13px 24px;border-radius:3px;">Book Free Review</button>
               </div>
               <div style="margin-top:12px;font-size:11px;color:var(--sc-w50)">No hard sell. Fast turnaround. Built for trades.</div>
@@ -1622,7 +1726,7 @@ footer .logo{}
     <div class="price-grid reveal">
 
       <!-- ── CARD 1: WEBSITE REBUILD ── -->
-      <div class="price-card">
+      <div class="price-card" id="price-card-rebuild">
         <div class="pc-badge-wrap"></div>
         <div class="pc-header">
           <div class="pc-name">Website Rebuild</div>
@@ -1645,7 +1749,7 @@ footer .logo{}
       </div>
 
       <!-- ── CARD 2: WEBSITE + CONVERSION SYSTEM (FEATURED) ── -->
-      <div class="price-card featured">
+      <div class="price-card featured" id="price-card-system">
         <div class="pc-badge-wrap">
           <span class="pc-badge">⭐ Most Popular</span>
         </div>
@@ -1671,7 +1775,7 @@ footer .logo{}
       </div>
 
       <!-- ── CARD 3: GROWTH SYSTEM (PREMIUM) ── -->
-      <div class="price-card premium">
+      <div class="price-card premium" id="price-card-growth">
         <div class="pc-badge-wrap">
           <span class="pc-badge premium-badge">⚡ Custom &amp; Selective</span>
         </div>
@@ -2274,6 +2378,13 @@ function openBuyModal(pkg) {
   const startPkg = pkg || 'rebuild';
   buySelectPackage(startPkg);
 
+  /* Update modal title to reflect selected package */
+  const pkgData = BUY_PACKAGES[startPkg];
+  const titleEl = document.getElementById('buy-modal-title');
+  if (titleEl && pkgData) {
+    titleEl.textContent = `Start Your ${pkgData.label}`;
+  }
+
   /* Pre-fill URL from scanner if available */
   const urlVal = (document.getElementById('inp-url')?.value || '').trim()
               || scanResult?.websiteUrl || '';
@@ -2292,6 +2403,80 @@ function closeBuyModal() {
 
 function closeBuyModalIfOverlay(e) {
   if (e.target === document.getElementById('buy-modal-overlay')) closeBuyModal();
+}
+
+/* ── PRICING SCROLL + RECOMMENDATION ────────────────────────────────────────
+   Called by the scan results "Get Started Now" CTA.
+   1. Determines recommended card from scan score
+   2. Applies recommendation badge
+   3. Scrolls to pricing (offsetting for fixed nav ~64px)
+   4. After scroll settles, pulses the recommended card
+──────────────────────────────────────────────────────────────────────────── */
+function scrollToPricing() {
+  const score = scanResult?.totalScore ?? null;
+
+  /* Determine which card to recommend */
+  let recKey = 'system'; /* default: middle card */
+  if (score !== null) {
+    if (score > 80) recKey = 'rebuild';   /* site already decent, lighter fix */
+    else            recKey = 'system';    /* <80: full conversion system needed */
+  }
+
+  applyPricingRecommendation(recKey);
+
+  /* Scroll to recommended card on mobile (single column), pricing section on desktop */
+  const isMobile = window.innerWidth < 640;
+  const targetId  = isMobile ? `price-card-${recKey}` : 'pricing';
+  const target    = document.getElementById(targetId);
+  if (!target) return;
+
+  const navH = document.querySelector('nav')?.offsetHeight || 64;
+  const top  = target.getBoundingClientRect().top + window.scrollY - navH - 16;
+
+  window.scrollTo({ top, behavior: 'smooth' });
+
+  /* Pulse card after scroll settles */
+  setTimeout(() => pulsePricingCard(recKey), 700);
+}
+
+function applyPricingRecommendation(key) {
+  /* Remove any previous recommendation */
+  document.querySelectorAll('.price-card').forEach(c => {
+    c.classList.remove('scan-recommended');
+    const existingRec = c.querySelector('.pc-badge.rec-badge');
+    if (existingRec) existingRec.remove();
+  });
+
+  const card = document.getElementById(`price-card-${key}`);
+  if (!card) return;
+
+  card.classList.add('scan-recommended');
+
+  /* Inject "Recommended for you" badge into the badge-wrap */
+  const wrap = card.querySelector('.pc-badge-wrap');
+  if (wrap) {
+    /* Keep existing badge (Most Popular etc), prepend the rec badge */
+    const rec = document.createElement('span');
+    rec.className = 'pc-badge rec-badge';
+    rec.innerHTML = '✦ Recommended for you';
+    /* If there's already a badge, add some spacing */
+    if (wrap.firstChild) {
+      rec.style.marginRight = '6px';
+      wrap.insertBefore(rec, wrap.firstChild);
+    } else {
+      wrap.appendChild(rec);
+    }
+  }
+}
+
+function pulsePricingCard(key) {
+  const card = document.getElementById(`price-card-${key}`);
+  if (!card) return;
+  card.classList.remove('scan-pulse');
+  /* Force reflow so re-adding the class re-triggers the animation */
+  void card.offsetWidth;
+  card.classList.add('scan-pulse');
+  setTimeout(() => card.classList.remove('scan-pulse'), 700);
 }
 
 function buyFileSelected(input) {
@@ -2504,6 +2689,16 @@ function scEscHtml(str) {
   if(!str)return'';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+/* ── Hero logo animation — plays once on page load, no replay ── */
+(function() {
+  var el = document.getElementById('heroLogoAnim');
+  if (!el) return;
+  /* Short delay lets the browser paint first, making the animation feel intentional */
+  window.addEventListener('load', function() {
+    setTimeout(function() { el.classList.add('playing'); }, 300);
+  });
+})();
 </script>
 
 <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
