@@ -9,7 +9,7 @@ const CORS = {
   'Content-Type': 'application/json',
 };
 
-const WORKSPACE_ID = '36e3a296-adbb-4a87-9623-f1fe37f0bd92'; // Pnut Den
+const WORKSPACE_ID = '36e3a296-adbb-4a87-9623-f11e37f0bd92'; // Pnut Den
 
 function sanitise(v, max = 200) {
   if (!v || typeof v !== 'string') return '';
