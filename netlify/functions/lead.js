@@ -142,6 +142,26 @@ function buildExtraData(body) {
   return Object.keys(extra).length ? extra : null;
 }
 
+function eventTitle(intent, packageKey) {
+  const map = {
+    unlock: 'Scanner reveal submitted',
+    start_now: packageKey ? `Start now submitted (${packageKey})` : 'Start now submitted',
+    growth_application: 'Growth application submitted',
+    contact: 'Contact enquiry submitted',
+    booking_request: 'Booking request submitted',
+  };
+  return map[String(intent || '').toLowerCase()] || 'Website enquiry submitted';
+}
+
+async function insertProspectEvent(supabase, eventRow) {
+  try {
+    const { error } = await supabase.from('tradeconvert_prospect_events').insert(eventRow);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('tradeconvert_prospect_events insert failed:', err.message || err);
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') {
@@ -206,6 +226,9 @@ exports.handler = async (event) => {
       business_name: businessName,
       trade: deriveTrade(body),
       source,
+      latest_source: source,
+      latest_intent: intent,
+      last_submitted_at: new Date().toISOString(),
       status: existing?.status || 'new',
       payment_status: existing?.payment_status || 'unpaid',
       selected_package: selectedPackage || existing?.selected_package || null,
@@ -216,6 +239,7 @@ exports.handler = async (event) => {
     };
 
     let result;
+    let eventAction = 'created';
     if (existing?.id) {
       const { data, error } = await supabase
         .from('tradeconvert_prospects')
@@ -225,6 +249,7 @@ exports.handler = async (event) => {
         .single();
       if (error) throw error;
       result = data;
+      eventAction = 'updated';
     } else {
       const { data, error } = await supabase
         .from('tradeconvert_prospects')
@@ -237,6 +262,21 @@ exports.handler = async (event) => {
       if (error) throw error;
       result = data;
     }
+
+    await insertProspectEvent(supabase, {
+      prospect_id: result.id,
+      event_type: 'submission',
+      source,
+      intent,
+      title: eventTitle(intent, selectedPackage),
+      payload: {
+        action: eventAction,
+        selected_package: selectedPackage,
+        notes,
+        scan_payload: scanPayload,
+        extra_data: extraData,
+      },
+    });
 
     return {
       statusCode: 200,

@@ -11,6 +11,15 @@ function getSupabase() {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+async function insertProspectEvent(supabase, eventRow) {
+  try {
+    const { error } = await supabase.from('tradeconvert_prospect_events').insert(eventRow);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('tradeconvert_prospect_events insert failed:', err.message || err);
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -59,11 +68,27 @@ exports.handler = async (event) => {
             payment_status: paymentStatus,
             next_action: nextAction,
             stripe_session_id: session.id,
+            latest_source: 'stripe_webhook',
+            latest_intent: 'deposit_paid',
+            last_submitted_at: new Date().toISOString(),
             notes: mergedNotes,
           })
           .eq('id', prospectId);
 
         if (error) throw error;
+
+        await insertProspectEvent(supabase, {
+          prospect_id: prospectId,
+          event_type: 'checkout_completed',
+          source: 'stripe_webhook',
+          intent: 'deposit_paid',
+          title: 'Deposit paid',
+          payload: {
+            stripe_session_id: session.id,
+            amount_total: session.amount_total,
+            currency: session.currency,
+          },
+        });
       }
     }
 

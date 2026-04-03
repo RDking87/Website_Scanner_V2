@@ -52,6 +52,15 @@ function businessNameFromUrl(url) {
   }
 }
 
+async function insertProspectEvent(supabase, eventRow) {
+  try {
+    const { error } = await supabase.from('tradeconvert_prospect_events').insert(eventRow);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('tradeconvert_prospect_events insert failed:', err.message || err);
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') {
@@ -116,7 +125,9 @@ exports.handler = async (event) => {
       business_name: sanitise(body.business_name || body.businessName, 200) || businessNameFromUrl(websiteUrl),
       trade: sanitise(body.trade || body.scanPayload?.trade || '', 120) || null,
       source: 'website_start_now',
-      intent: sanitise(body.intent || 'start_now', 80) || 'start_now',
+      latest_source: 'website_start_now',
+      latest_intent: sanitise(body.intent || 'start_now', 80) || 'start_now',
+      last_submitted_at: new Date().toISOString(),
       status: prospect?.status || 'new',
       payment_status: 'pending',
       selected_package: packageKey,
@@ -148,6 +159,14 @@ exports.handler = async (event) => {
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
+      await insertProspectEvent(supabase, {
+        prospect_id: saved.id,
+        event_type: 'checkout_started',
+        source: 'website_start_now',
+        intent: 'start_now',
+        title: `Deposit path started (${packageKey})`,
+        payload: { package_key: packageKey, mode: 'mock_success' },
+      });
       return {
         statusCode: 200,
         headers: CORS,
@@ -187,6 +206,15 @@ exports.handler = async (event) => {
       .update({ stripe_session_id: session.id })
       .eq('id', saved.id);
     if (sessionUpdateError) console.warn('Could not persist stripe_session_id:', sessionUpdateError.message);
+
+    await insertProspectEvent(supabase, {
+      prospect_id: saved.id,
+      event_type: 'checkout_started',
+      source: 'website_start_now',
+      intent: 'start_now',
+      title: `Deposit path started (${packageKey})`,
+      payload: { package_key: packageKey, stripe_session_id: session.id },
+    });
 
     return {
       statusCode: 200,
